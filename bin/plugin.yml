@@ -1,0 +1,5 @@
+name: InfiniteInventory
+version: 1.0.0
+main: me.kevinnovak.infiniteinventory.InfiniteInventory
+author: KevinNovak
+description: Carry as many items as you'd like.
