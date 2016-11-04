@@ -10,9 +10,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -155,12 +157,22 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
 //    public void onInventoryOpen(InventoryOpenEvent event){
 //    }
     
-//    // =========================
-//    // Inventory Click
-//    // =========================
-//    @EventHandler
-//    public void onInventoryClick(InventoryClickEvent event) {
-//    }
+    // =========================
+    // Inventory Click
+    // =========================
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+		HumanEntity human = event.getWhoClicked();
+		if (human instanceof Player) {
+			Player player = (Player) human;
+			int slot = event.getRawSlot();
+	    	if (slot == 35) {
+	    		playerInvs.get(player.getName()).nextPage();
+	    	} else if (slot == 27) {
+	    		playerInvs.get(player.getName()).prevPage();
+	    	}
+		}
+    }
     
     // ======================
     // Commands
