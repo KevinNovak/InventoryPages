@@ -58,16 +58,20 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     
     private void saveInvs() {
 		// TODO Auto-generated method stub
-		
+//    	for(Map.Entry<String, CustomInventory> playerInv : playerInvs.entrySet()) {
+//        	for(Entry<Integer, HashMap<Integer, ItemStack>> page : playerInv.getValue().getItems().entrySet()) {
+//        		invsData.set(playerInv.getKey() + "." + page.getKey() + "." + , serializer.toBase64(itemstack));
+//        	}
+//    	}
 	}
     
     public void saveInvsFile() {
-        try {
-        	invsData.save(invsFile);
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+//        try {
+//        	invsData.save(invsFile);
+//        } catch (IOException e1) {
+//            // TODO Auto-generated catch block
+//            e1.printStackTrace();
+//        }
     }
 
 	// =========================

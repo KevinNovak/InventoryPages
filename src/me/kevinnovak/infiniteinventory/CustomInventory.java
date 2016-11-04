@@ -10,7 +10,7 @@ public class CustomInventory {
 //	private ItemStack nextItem;
 //	private ItemStack prevItem;
 	private Integer page = 0;
-	private HashMap<Integer, HashMap<Integer, ItemStack>> items = new HashMap<Integer, HashMap<Integer, ItemStack>>();;
+	private HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();;
 	
 	CustomInventory(Player player) {
 		this.player = player;
@@ -22,17 +22,17 @@ public class CustomInventory {
 	}
 	
 	void createPage(Integer page) {
-		HashMap<Integer, ItemStack> pageItems = new HashMap<Integer, ItemStack>();
+		ItemStack[] pageItems = new ItemStack[27];
 		for(int i=0; i<27; i++) {
-			pageItems.put(i, null);
+			pageItems[i] = null;
 		}
 		this.items.put(page, pageItems);
 	}
 	
 	void saveCurrentPage() {
-		HashMap<Integer, ItemStack> pageItems = new HashMap<Integer, ItemStack>();
+		ItemStack[] pageItems = new ItemStack[27];
 		for(int i=0; i<27; i++) {
-			pageItems.put(i, this.player.getInventory().getItem(i+9));
+			pageItems[i] = this.player.getInventory().getItem(i+9);
 		}
 		this.items.put(this.page, pageItems);
 	}
@@ -51,7 +51,7 @@ public class CustomInventory {
 	void showPage(Integer page) {
 		this.page = page;
 		for(int i=0; i<27; i++) {
-			this.player.getInventory().setItem(i+9, items.get(this.page).get(i));
+			this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
 		}
 		player.sendMessage("Showing Page: " + page);
 	}
@@ -75,5 +75,8 @@ public class CustomInventory {
 		}
 	}
 	
+	HashMap<Integer, ItemStack[]> getItems() {
+		return this.items;
+	}
 	
 }
