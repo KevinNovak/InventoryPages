@@ -1,10 +1,13 @@
 package me.kevinnovak.infiniteinventory;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,13 +17,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class InfiniteInventory extends JavaPlugin implements Listener{
 	private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
-	
+	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
+    public File invsFile = new File(getDataFolder()+"/inventories.yml");
+    public FileConfiguration invsData = YamlConfiguration.loadConfiguration(invsFile);
 	
     // ======================
     // Enable
     // ======================
     public void onEnable() {
         saveDefaultConfig();
+        saveInvsFile();
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
         if (getConfig().getBoolean("metrics")) {
             try {
@@ -48,13 +54,21 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     
     private void loadInvs() {
 		// TODO Auto-generated method stub
-		
 	}
     
     private void saveInvs() {
 		// TODO Auto-generated method stub
 		
 	}
+    
+    public void saveInvsFile() {
+        try {
+        	invsData.save(invsFile);
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+    }
 
 	// =========================
     // Login
