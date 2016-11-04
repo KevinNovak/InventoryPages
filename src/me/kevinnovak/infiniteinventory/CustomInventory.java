@@ -2,13 +2,14 @@ package me.kevinnovak.infiniteinventory;
 
 import java.util.HashMap;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class CustomInventory {
 	private Player player;
-//	private ItemStack nextItem;
-//	private ItemStack prevItem;
+	private ItemStack nextItem = new ItemStack(Material.DIAMOND);
+	private ItemStack prevItem;
 	private Integer page = 0;
 	private HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();;
 	
@@ -52,6 +53,9 @@ public class CustomInventory {
 		this.page = page;
 		for(int i=0; i<27; i++) {
 			this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
+			if (i== 18 || i == 26) {
+				this.player.getInventory().setItem(i+9, nextItem);
+			}
 		}
 		player.sendMessage("Showing Page: " + page);
 	}
