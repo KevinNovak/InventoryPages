@@ -99,6 +99,7 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     		pageExists = invsData.contains(player.getName() + "." + pageNum);
     	}
     	inventory.setItems(items);
+    	playerInvs.put(player.getName(), inventory);
     }
 
 	// =========================
@@ -110,6 +111,8 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     	
     	//TEMP:
     	loadInv(player);
+    	playerInvs.get(player.getName()).setPlayer(player);
+    	playerInvs.get(player.getName()).showPage(0);
     	
     	if (!playerInvs.containsKey(player.getName())) {
     		CustomInventory playerInv = new CustomInventory(player);
