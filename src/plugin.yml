@@ -3,3 +3,14 @@ version: 1.0.0
 main: me.kevinnovak.infiniteinventory.InfiniteInventory
 author: KevinNovak
 description: Carry as many items as you'd like.
+
+commands:
+    testsave:
+        usage: /<command>
+        description: Test.
+    testnext:
+        usage: /<command>
+        description: Test.
+    testprev:
+        usage: /<command>
+        description: Test.
