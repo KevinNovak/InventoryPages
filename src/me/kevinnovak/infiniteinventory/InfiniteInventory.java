@@ -34,16 +34,29 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
             Bukkit.getServer().getLogger().info("[InfiniteInventory] Metrics Disabled.");
         }
         Bukkit.getServer().getLogger().info("[InfiniteInventory] Plugin Enabled!");
+        
+        loadInvs();
     }
-    
-    // ======================
+
+	// ======================
     // Disable
     // ======================
     public void onDisable() {
+    	saveInvs();
         Bukkit.getServer().getLogger().info("[InfiniteInventory] Plugin Disabled!");
     }
     
-    // =========================
+    private void loadInvs() {
+		// TODO Auto-generated method stub
+		
+	}
+    
+    private void saveInvs() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	// =========================
     // Login
     // =========================
     @EventHandler
