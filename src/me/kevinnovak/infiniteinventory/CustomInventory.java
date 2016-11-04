@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class CustomInventory {
 	private Player player;
@@ -54,6 +55,9 @@ public class CustomInventory {
 		for(int i=0; i<27; i++) {
 			this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
 			if (i== 18 || i == 26) {
+	            ItemMeta nextItemMeta = nextItem.getItemMeta();
+	            nextItemMeta.setDisplayName("Next");
+	            nextItem.setItemMeta(nextItemMeta);
 				this.player.getInventory().setItem(i+9, nextItem);
 			}
 		}

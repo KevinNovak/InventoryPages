@@ -167,8 +167,10 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
 			Player player = (Player) human;
 			int slot = event.getRawSlot();
 	    	if (slot == 35) {
+	    		event.setCancelled(true);
 	    		playerInvs.get(player.getName()).nextPage();
 	    	} else if (slot == 27) {
+	    		event.setCancelled(true);
 	    		playerInvs.get(player.getName()).prevPage();
 	    	}
 		}
