@@ -77,7 +77,8 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
         }
     }
     
-    public void loadInv(Player player) throws IOException {
+    @SuppressWarnings("deprecation")
+	public void loadInv(Player player) throws IOException {
     	HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();
     	CustomInventory inventory = new CustomInventory(player);
     	int pageNum = 0;
@@ -87,7 +88,11 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     		Bukkit.getLogger().info("Loading " + player.getName() + "'s Page: " + pageNum);
     		ItemStack[] pageItems = new ItemStack[27];
     		for(int i = 0; i < 27; i++) {
-    			pageItems[i] = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(player.getName() + "." + pageNum + "." + i))[0];
+    			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(player.getName() + "." + pageNum + "." + i))[0];
+    			if (item != null) {
+    				Bukkit.getLogger().info("Valid item: " + item.getTypeId());
+    				pageItems[i] = item;
+    			}
     		}
     		items.put(pageNum, pageItems);
     		pageNum++;
