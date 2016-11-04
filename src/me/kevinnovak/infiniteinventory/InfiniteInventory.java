@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class InfiniteInventory extends JavaPlugin implements Listener{
@@ -54,12 +52,9 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     	if (!playerInvs.containsKey(player.getName())) {
     		CustomInventory playerInv = new CustomInventory(player);
     		playerInvs.put(player.getName(), playerInv);
-    		player.sendMessage("DNE");
     	} else {
     		playerInvs.get(player.getName()).setPlayer(player);
     		playerInvs.get(player.getName()).showPage(0);
-    		player.sendMessage(player.getName());
-    		player.sendMessage("E");
     	}
     }
     
@@ -69,7 +64,9 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) throws InterruptedException {
     	Player player = event.getPlayer();
-    	playerInvs.get(player.getName()).savePage();
+    	if (!playerInvs.containsKey(player.getName())) {
+    		playerInvs.get(player.getName()).saveCurrentPage();
+    	}
     }
     
 //    // =========================
@@ -86,29 +83,6 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
 //    public void onInventoryClick(InventoryClickEvent event) {
 //    }
     
-    void addToInventory(Player player) {
-    	//List<ItemStack> playerItems;
-    	
-    	
-    	ItemStack[] playerInv = player.getInventory().getContents();
-    	ItemStack[] savedInv = new ItemStack[27];
-    	for (int i = 0; i<27; i++) {
-    		savedInv[i] = playerInv[i+9];
-    	}
-    	
-    	ItemStack[] customInv = new ItemStack[27];
-    	ItemStack nextItem = new ItemStack(Material.DIAMOND, 1);
-    	ItemStack prevItem = new ItemStack(Material.EMERALD, 1);
-    	for (int i = 0; i < 27; i++) {
-    		customInv[i] = savedInv[i];
-    	}
-    	customInv[26] = nextItem;
-    	customInv[18] = prevItem;
-    	for(int i =0; i<customInv.length; i++) {
-    		player.getInventory().setItem(i+9, customInv[i]);
-    	}
-    }
-    
     // ======================
     // Commands
     // ======================
@@ -124,7 +98,7 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
         // Player
         // ======================
         if (cmd.getName().equalsIgnoreCase("testsave")) {
-        	playerInvs.get(player.getName()).savePage();
+        	playerInvs.get(player.getName()).saveCurrentPage();
         }
         if (cmd.getName().equalsIgnoreCase("testnext")) {
         	playerInvs.get(player.getName()).nextPage();

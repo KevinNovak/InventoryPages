@@ -8,9 +8,12 @@ commands:
     testsave:
         usage: /<command>
         description: Test.
+        aliases: [iisave]
     testnext:
         usage: /<command>
         description: Test.
+        aliases: [iinext]
     testprev:
         usage: /<command>
         description: Test.
+        aliases: [iiprev]
