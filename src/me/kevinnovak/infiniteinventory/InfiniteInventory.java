@@ -2,6 +2,8 @@ package me.kevinnovak.infiniteinventory;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -13,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class InfiniteInventory extends JavaPlugin implements Listener{
@@ -57,21 +60,23 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
 	}
     
     private void saveInvs() {
-		// TODO Auto-generated method stub
-//    	for(Map.Entry<String, CustomInventory> playerInv : playerInvs.entrySet()) {
-//        	for(Entry<Integer, HashMap<Integer, ItemStack>> page : playerInv.getValue().getItems().entrySet()) {
-//        		invsData.set(playerInv.getKey() + "." + page.getKey() + "." + , serializer.toBase64(itemstack));
-//        	}
-//    	}
+    	for(Map.Entry<String, CustomInventory> playerInv : playerInvs.entrySet()) {
+        	for(Entry<Integer, ItemStack[]> page : playerInv.getValue().getItems().entrySet()) {
+        		for(int i = 0; i < page.getValue().length; i++) {
+            		invsData.set(playerInv.getKey() + "." + page.getKey() + "." + i, InventoryStringDeSerializer.toBase64(page.getValue()[i]));
+        		}
+        	}
+    	}
+    	saveInvsFile();
 	}
     
     public void saveInvsFile() {
-//        try {
-//        	invsData.save(invsFile);
-//        } catch (IOException e1) {
-//            // TODO Auto-generated catch block
-//            e1.printStackTrace();
-//        }
+        try {
+        	invsData.save(invsFile);
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
     }
 
 	// =========================
