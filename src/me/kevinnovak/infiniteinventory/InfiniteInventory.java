@@ -81,15 +81,17 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     	HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();
     	CustomInventory inventory = new CustomInventory(player);
     	int pageNum = 0;
-    	Boolean pageExists = invsData.contains(player.getName() + pageNum);
+    	Boolean pageExists = invsData.contains(player.getName() + "." + pageNum);
+    	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
     	while (pageExists) {
+    		Bukkit.getLogger().info("Loading " + player.getName() + "'s Page: " + pageNum);
     		ItemStack[] pageItems = new ItemStack[27];
     		for(int i = 0; i < 27; i++) {
     			pageItems[i] = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(player.getName() + "." + pageNum + "." + i))[0];
     		}
     		items.put(pageNum, pageItems);
     		pageNum++;
-    		pageExists = invsData.contains(player.getName() + pageNum);
+    		pageExists = invsData.contains(player.getName() + "." + pageNum);
     	}
     	inventory.setItems(items);
     }
@@ -100,6 +102,10 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) throws InterruptedException, IOException {
     	Player player = event.getPlayer();
+    	
+    	//TEMP:
+    	loadInv(player);
+    	
     	if (!playerInvs.containsKey(player.getName())) {
     		CustomInventory playerInv = new CustomInventory(player);
     		playerInvs.put(player.getName(), playerInv);
