@@ -43,6 +43,15 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
             Bukkit.getServer().getLogger().info("[InfiniteInventory] Metrics Disabled.");
         }
         Bukkit.getServer().getLogger().info("[InfiniteInventory] Plugin Enabled!");
+        
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        	try {
+				loadInv(player);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
     }
 
 	// ======================
@@ -114,7 +123,7 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     	playerInvs.get(player.getName()).setPlayer(player);
     	playerInvs.get(player.getName()).showPage(0);
     	
-    	if (!playerInvs.containsKey(player.getName())) {
+    	if (!(playerInvs.containsKey(player.getName()) && invsData.contains(player.getName()))) {
     		CustomInventory playerInv = new CustomInventory(player);
     		playerInvs.put(player.getName(), playerInv);
     	} else {
