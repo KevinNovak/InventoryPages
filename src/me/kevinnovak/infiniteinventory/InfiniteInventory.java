@@ -43,29 +43,27 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
             Bukkit.getServer().getLogger().info("[InfiniteInventory] Metrics Disabled.");
         }
         Bukkit.getServer().getLogger().info("[InfiniteInventory] Plugin Enabled!");
-        
-        loadInvs();
     }
 
 	// ======================
     // Disable
     // ======================
     public void onDisable() {
-    	saveInvs();
+    	saveAllInvs();
         Bukkit.getServer().getLogger().info("[InfiniteInventory] Plugin Disabled!");
     }
     
-    private void loadInvs() {
-		// TODO Auto-generated method stub
-	}
-    
-    private void saveInvs() {
+    private void saveAllInvs() {
     	for(Map.Entry<String, CustomInventory> playerInv : playerInvs.entrySet()) {
-        	for(Entry<Integer, ItemStack[]> page : playerInv.getValue().getItems().entrySet()) {
-        		for(int i = 0; i < page.getValue().length; i++) {
-            		invsData.set(playerInv.getKey() + "." + page.getKey() + "." + i, InventoryStringDeSerializer.toBase64(page.getValue()[i]));
-        		}
-        	}
+    		saveInv(playerInv.getKey());
+    	}
+    }
+    
+    private void saveInv(String player) {
+    	for(Entry<Integer, ItemStack[]> page : playerInvs.get(player).getItems().entrySet()) {
+    		for(int i = 0; i < page.getValue().length; i++) {
+        		invsData.set(player + "." + page.getKey() + "." + i, InventoryStringDeSerializer.toBase64(page.getValue()[i]));
+    		}
     	}
     	saveInvsFile();
 	}
@@ -78,17 +76,35 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
             e1.printStackTrace();
         }
     }
+    
+    public void loadInv(Player player) throws IOException {
+    	HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();
+    	CustomInventory inventory = new CustomInventory(player);
+    	int pageNum = 0;
+    	Boolean pageExists = invsData.contains(player.getName() + pageNum);
+    	while (pageExists) {
+    		ItemStack[] pageItems = new ItemStack[27];
+    		for(int i = 0; i < 27; i++) {
+    			pageItems[i] = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(player.getName() + "." + pageNum + "." + i))[0];
+    		}
+    		items.put(pageNum, pageItems);
+    		pageNum++;
+    		pageExists = invsData.contains(player.getName() + pageNum);
+    	}
+    	inventory.setItems(items);
+    }
 
 	// =========================
     // Login
     // =========================
     @EventHandler
-    public void playerJoin(PlayerJoinEvent event) throws InterruptedException {
+    public void playerJoin(PlayerJoinEvent event) throws InterruptedException, IOException {
     	Player player = event.getPlayer();
     	if (!playerInvs.containsKey(player.getName())) {
     		CustomInventory playerInv = new CustomInventory(player);
     		playerInvs.put(player.getName(), playerInv);
     	} else {
+    		loadInv(player);
     		playerInvs.get(player.getName()).setPlayer(player);
     		playerInvs.get(player.getName()).showPage(0);
     	}

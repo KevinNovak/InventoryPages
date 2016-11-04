@@ -79,4 +79,8 @@ public class CustomInventory {
 		return this.items;
 	}
 	
+	void setItems(HashMap<Integer, ItemStack[]> items) {
+		this.items = items;
+	}
+	
 }
