@@ -1,5 +1,6 @@
 package me.kevinnovak.infiniteinventory;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,10 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class InfiniteInventory extends JavaPlugin implements Listener{
+	private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
+	
 	
     // ======================
     // Enable
@@ -44,10 +48,28 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     // =========================
     // Login
     // =========================
-    CustomInventory test;
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) throws InterruptedException {
-    	test = new CustomInventory(event.getPlayer());
+    	Player player = event.getPlayer();
+    	if (!playerInvs.containsKey(player.getName())) {
+    		CustomInventory playerInv = new CustomInventory(player);
+    		playerInvs.put(player.getName(), playerInv);
+    		player.sendMessage("DNE");
+    	} else {
+    		playerInvs.get(player.getName()).setPlayer(player);
+    		playerInvs.get(player.getName()).showPage(0);
+    		player.sendMessage(player.getName());
+    		player.sendMessage("E");
+    	}
+    }
+    
+    // =========================
+    // Logout
+    // =========================
+    @EventHandler
+    public void playerQuit(PlayerQuitEvent event) throws InterruptedException {
+    	Player player = event.getPlayer();
+    	playerInvs.get(player.getName()).savePage();
     }
     
 //    // =========================
@@ -55,31 +77,13 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
 //    // =========================
 //    @EventHandler
 //    public void onInventoryOpen(InventoryOpenEvent event){
-//    	HumanEntity human = event.getPlayer();
-//    	if (human instanceof Player) {
-//    		Player player = (Player) human;
-//    		myInventory.setItem(35, nextItem);
-//    		player.closeInventory();
-//    		event.setCancelled(true);
-//    		player.openInventory(myInventory);
-//    	}
 //    }
     
 //    // =========================
-//    // Click Next
+//    // Inventory Click
 //    // =========================
 //    @EventHandler
 //    public void onInventoryClick(InventoryClickEvent event) {
-//      HumanEntity human = event.getWhoClicked();
-//      if (human instanceof Player) {
-//    	  Player player = (Player) human;
-//          if (event.getInventory().getTitle().equals("Inv Shop")) {
-//              event.setCancelled(true);
-//              player.updateInventory();
-//                 
-//          }
-//      }
-//      return;
 //    }
     
     void addToInventory(Player player) {
@@ -115,19 +119,18 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
         if (!(sender instanceof Player)) {
             return true;
         }
-        @SuppressWarnings("unused")
 		Player player = (Player) sender;
         // ======================
         // Player
         // ======================
         if (cmd.getName().equalsIgnoreCase("testsave")) {
-        	test.savePage();
+        	playerInvs.get(player.getName()).savePage();
         }
         if (cmd.getName().equalsIgnoreCase("testnext")) {
-        	test.nextPage();
+        	playerInvs.get(player.getName()).nextPage();
         }
         if (cmd.getName().equalsIgnoreCase("testprev")) {
-        	test.prevPage();
+        	playerInvs.get(player.getName()).prevPage();
         }
 		return true;
     }
