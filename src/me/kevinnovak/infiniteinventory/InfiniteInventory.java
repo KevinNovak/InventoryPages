@@ -63,6 +63,9 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     }
     
     private void saveAllInvs() {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        	playerInvs.get(player.getName()).saveCurrentPage();
+        }
     	for(Map.Entry<String, CustomInventory> playerInv : playerInvs.entrySet()) {
     		saveInv(playerInv.getKey());
     	}
@@ -109,6 +112,7 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     	}
     	inventory.setItems(items);
     	playerInvs.put(player.getName(), inventory);
+    	playerInvs.get(player.getName()).showPage(0);
     }
 
 	// =========================
