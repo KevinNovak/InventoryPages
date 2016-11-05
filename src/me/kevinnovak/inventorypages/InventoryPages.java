@@ -7,7 +7,6 @@ import java.util.ListIterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -32,6 +31,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
     
 	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
+    ColorConverter colorConv = new ColorConverter(this);
 	
 	private ItemStack nextItem, prevItem, noActionItem;
 
@@ -85,20 +85,24 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	// ======================
     // Initialize Next Item
     // ======================
-    public void initItems() {
-    	prevItem = new ItemStack(Material.EMERALD);
+    @SuppressWarnings("deprecation")
+	public void initItems() {
+    	prevItem = new ItemStack(getConfig().getInt("items.prev.ID"));
         ItemMeta prevItemMeta = prevItem.getItemMeta();
-        prevItemMeta.setDisplayName("Prev");
+        prevItemMeta.setDisplayName(colorConv.convertConfig("items.prev.name"));
+        prevItemMeta.setLore(colorConv.convertConfigList("items.prev.lore"));
         prevItem.setItemMeta(prevItemMeta);
     	
-    	nextItem = new ItemStack(Material.DIAMOND);
+    	nextItem = new ItemStack(getConfig().getInt("items.next.ID"));
         ItemMeta nextItemMeta = nextItem.getItemMeta();
-        nextItemMeta.setDisplayName("Next");
+        nextItemMeta.setDisplayName(colorConv.convertConfig("items.next.name"));
+        nextItemMeta.setLore(colorConv.convertConfigList("items.next.lore"));
         nextItem.setItemMeta(nextItemMeta);
         
-    	noActionItem = new ItemStack(Material.STONE);
+    	noActionItem = new ItemStack(getConfig().getInt("items.noAction.ID"));
         ItemMeta noActionItemMeta = noActionItem.getItemMeta();
-        noActionItemMeta.setDisplayName("No pages");
+        noActionItemMeta.setDisplayName(colorConv.convertConfig("items.noAction.name"));
+        noActionItemMeta.setLore(colorConv.convertConfigList("items.noAction.lore"));
         noActionItem.setItemMeta(noActionItemMeta);
     }
     
