@@ -254,7 +254,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
 		HumanEntity human = event.getWhoClicked();
 		if (human instanceof Player) {
 			Player player = (Player) human;
-			int slot = event.getRawSlot();
+			int slot = event.getSlot();
 	    	if (slot == 35) {
 	    		event.setCancelled(true);
 	    		playerInvs.get(player.getName()).nextPage();
