@@ -33,7 +33,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     
 	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
 	
-	private ItemStack nextItem;
+	private ItemStack nextItem, prevItem;
 
     // ======================
     // Enable
@@ -55,8 +55,8 @@ public class InventoryPages extends JavaPlugin implements Listener{
             Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Disabled.");
         }
         
-        // initialize next item
-        initNextItem();
+        // initialize next, prev items
+        initItems();
         
         // load all online players into hashmap
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -85,7 +85,12 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	// ======================
     // Initialize Next Item
     // ======================
-    public void initNextItem() {
+    public void initItems() {
+    	prevItem = new ItemStack(Material.EMERALD);
+        ItemMeta prevItemMeta = prevItem.getItemMeta();
+        prevItemMeta.setDisplayName("Prev");
+        prevItem.setItemMeta(prevItemMeta);
+    	
     	nextItem = new ItemStack(Material.DIAMOND);
         ItemMeta nextItemMeta = nextItem.getItemMeta();
         nextItemMeta.setDisplayName("Next");
@@ -122,7 +127,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	@SuppressWarnings("deprecation")
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
 		String playerUUID = player.getUniqueId().toString();
-    	CustomInventory inventory = new CustomInventory(player, nextItem);
+    	CustomInventory inventory = new CustomInventory(player, prevItem, nextItem);
     
 		File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
@@ -218,7 +223,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
         ListIterator<ItemStack> litr = drops.listIterator();
         while(litr.hasNext()){
         	ItemStack stack = litr.next();
-        if (stack.equals(nextItem)) {
+        if (stack.equals(prevItem) || stack.equals(nextItem)) {
             litr.remove();
         }
     }
@@ -265,7 +270,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void onInventoryPickupItem(InventoryPickupItemEvent event) {
 		Item item = event.getItem();
-    	if (item == nextItem) {
+    	if (item == prevItem || item == nextItem) {
     		event.setCancelled(true);
     	}
     }
@@ -276,7 +281,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Item item = event.getItemDrop();
-    	if (item == nextItem) {
+    	if (item == prevItem || item == nextItem) {
     		event.setCancelled(true);
     	}
     }

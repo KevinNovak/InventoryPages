@@ -7,18 +7,19 @@ import org.bukkit.inventory.ItemStack;
 
 public class CustomInventory {
 	private Player player;
+	private ItemStack prevItem;
 	private ItemStack nextItem;
-	//private ItemStack prevItem;
 	private Integer page = 0;
 	private HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();;
 	
-	CustomInventory(Player player, ItemStack nextItem) {
+	CustomInventory(Player player, ItemStack prevItem, ItemStack nextItem) {
 		this.player = player;
+		this.prevItem = prevItem;
 		this.nextItem = nextItem;
 		this.saveCurrentPage();
 		ItemStack itemInPrevItemSlot = this.items.get(0)[18];
 		ItemStack itemInNextItemSlot = this.items.get(0)[26];
-		if(itemInPrevItemSlot != nextItem && itemInPrevItemSlot != null) {
+		if(itemInPrevItemSlot != prevItem && itemInPrevItemSlot != null) {
 			if (!pageExists(1)) {
 				createPage(1);
 			}
@@ -52,7 +53,9 @@ public class CustomInventory {
 		this.page = page;
 		for(int i=0; i<27; i++) {
 			this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
-			if (i== 18 || i == 26) {
+			if (i== 18) {
+				this.player.getInventory().setItem(i+9, prevItem);
+			} else if (i == 26) {
 				this.player.getInventory().setItem(i+9, nextItem);
 			}
 		}
