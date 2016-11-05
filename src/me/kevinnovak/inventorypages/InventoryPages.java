@@ -99,11 +99,11 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // Save Inventory From HashMap To File
     // =========================
 	public void saveInvFromHashMapToFile(Player player) {
-		String playerName = player.getName();
-		if (playerInvs.containsKey(playerName)) {
-	    	for(Entry<Integer, ItemStack[]> pageItemEntry : playerInvs.get(playerName).getItems().entrySet()) {
+		String playerUUID = player.getUniqueId().toString();
+		if (playerInvs.containsKey(playerUUID)) {
+	    	for(Entry<Integer, ItemStack[]> pageItemEntry : playerInvs.get(playerUUID).getItems().entrySet()) {
 	    		for(int i = 0; i < pageItemEntry.getValue().length; i++) {
-	        		invsData.set(playerName + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue()[i]));
+	        		invsData.set(playerUUID + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue()[i]));
 	    		}
 	    	}
 	    	saveInvsFile();
@@ -115,21 +115,21 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
 	@SuppressWarnings("deprecation")
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
-		String playerName = player.getName();
+		String playerUUID = player.getUniqueId().toString();
     	CustomInventory inventory = new CustomInventory(player, nextItem);
     
-    	if(invsData.contains(playerName)) {
+    	if(invsData.contains(playerUUID)) {
     		HashMap<Integer, ItemStack[]> pageItemHashMap = new HashMap<Integer, ItemStack[]>();
 
         	int pageNum = 0;
-        	Boolean pageExists = invsData.contains(playerName + "." + pageNum);
+        	Boolean pageExists = invsData.contains(playerUUID + "." + pageNum);
 
         	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
         	while (pageExists) {
-        		Bukkit.getLogger().info("Loading " + playerName + "'s Page: " + pageNum);
+        		Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
         		ItemStack[] pageItems = new ItemStack[27];
         		for(int i = 0; i < pageItems.length; i++) {
-        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(playerName + "." + pageNum + "." + i))[0];
+        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(playerUUID + "." + pageNum + "." + i))[0];
         			if (item != null) {
         				Bukkit.getLogger().info("Valid item: " + item.getTypeId());
         				pageItems[i] = item;
@@ -138,7 +138,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
         		pageItemHashMap.put(pageNum, pageItems);
         		
         		pageNum++;
-        		pageExists = invsData.contains(playerName + "." + pageNum);
+        		pageExists = invsData.contains(playerUUID + "." + pageNum);
         	}
         	inventory.setItems(pageItemHashMap);
 
@@ -147,17 +147,17 @@ public class InventoryPages extends JavaPlugin implements Listener{
     		// create a new inventory
     		inventory.saveCurrentPage();
     	}
-    	playerInvs.put(playerName, inventory);
-    	playerInvs.get(playerName).showPage(0);
+    	playerInvs.put(playerUUID, inventory);
+    	playerInvs.get(playerUUID).showPage(0);
 	}
 	
 	// =========================
     // Update Inventory To HashMap
     // =========================
 	public void updateInvToHashMap(Player player) {
-		String playerName = player.getName();
-		if(playerInvs.containsKey(playerName)) {
-			playerInvs.get(playerName).saveCurrentPage();
+		String playerUUID = player.getUniqueId().toString();
+		if(playerInvs.containsKey(playerUUID)) {
+			playerInvs.get(playerUUID).saveCurrentPage();
 		} else {
 			// TODO player has no inventory in hashmap
 			// create inventory and save to hashmap
@@ -168,9 +168,9 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // Remove Inventory From HashMap
     // =========================
 	public void removeInvFromHashMap(Player player) {
-		String playerName = player.getName();
-		if(playerInvs.containsKey(playerName)) {
-			playerInvs.remove(playerName);
+		String playerUUID = player.getUniqueId().toString();
+		if(playerInvs.containsKey(playerUUID)) {
+			playerInvs.remove(playerUUID);
 		}
 	}
 	
@@ -232,13 +232,13 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
     	Player player = event.getPlayer();
-    	String playerName = player.getName();
+    	String playerUUID = player.getUniqueId().toString();
     	
     	// saves empty inventory (other than next and prev)
     	// disable this if you want to keep items
     	updateInvToHashMap(player);
     	
-    	playerInvs.get(playerName).showPage();
+    	playerInvs.get(playerUUID).showPage();
     }
     
 //    // =========================
@@ -256,13 +256,14 @@ public class InventoryPages extends JavaPlugin implements Listener{
 		HumanEntity human = event.getWhoClicked();
 		if (human instanceof Player) {
 			Player player = (Player) human;
+			String playerUUID = (String) player.getUniqueId().toString();
 			int slot = event.getSlot();
 	    	if (slot == 35) {
 	    		event.setCancelled(true);
-	    		playerInvs.get(player.getName()).nextPage();
+	    		playerInvs.get(playerUUID).nextPage();
 	    	} else if (slot == 27) {
 	    		event.setCancelled(true);
-	    		playerInvs.get(player.getName()).prevPage();
+	    		playerInvs.get(playerUUID).prevPage();
 	    	}
 		}
     }
@@ -288,17 +289,18 @@ public class InventoryPages extends JavaPlugin implements Listener{
             return true;
         }
 		Player player = (Player) sender;
+		String playerUUID = player.getUniqueId().toString();
         // ======================
         // Player
         // ======================
         if (cmd.getName().equalsIgnoreCase("testsave")) {
-        	playerInvs.get(player.getName()).saveCurrentPage();
+        	playerInvs.get(playerUUID).saveCurrentPage();
         }
         if (cmd.getName().equalsIgnoreCase("testnext")) {
-        	playerInvs.get(player.getName()).nextPage();
+        	playerInvs.get(playerUUID).nextPage();
         }
         if (cmd.getName().equalsIgnoreCase("testprev")) {
-        	playerInvs.get(player.getName()).prevPage();
+        	playerInvs.get(playerUUID).prevPage();
         }
 		return true;
     }
