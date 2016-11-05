@@ -2,9 +2,11 @@ package me.kevinnovak.inventorypages;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,10 +15,13 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class InventoryPages extends JavaPlugin implements Listener{
@@ -26,6 +31,8 @@ public class InventoryPages extends JavaPlugin implements Listener{
     public FileConfiguration invsData = YamlConfiguration.loadConfiguration(invsFile);
     
 	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
+	
+	private ItemStack nextItem;
 
     // ======================
     // Enable
@@ -47,6 +54,9 @@ public class InventoryPages extends JavaPlugin implements Listener{
         } else {
             Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Disabled.");
         }
+        
+        // initialize next item
+        initNextItem();
         
         // load all online players into hashmap
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -72,6 +82,16 @@ public class InventoryPages extends JavaPlugin implements Listener{
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
     }
     
+	// ======================
+    // Initialize Next Item
+    // ======================
+    public void initNextItem() {
+    	nextItem = new ItemStack(Material.DIAMOND);
+        ItemMeta nextItemMeta = nextItem.getItemMeta();
+        nextItemMeta.setDisplayName("Next");
+        nextItem.setItemMeta(nextItemMeta);
+    }
+    
 	// =========================
     // Save Inventory From HashMap To File
     // =========================
@@ -93,7 +113,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	@SuppressWarnings("deprecation")
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
 		String playerName = player.getName();
-    	CustomInventory inventory = new CustomInventory(player);
+    	CustomInventory inventory = new CustomInventory(player, nextItem);
     
     	if(invsData.contains(playerName)) {
     		HashMap<Integer, ItemStack[]> pageItemHashMap = new HashMap<Integer, ItemStack[]>();
@@ -180,6 +200,26 @@ public class InventoryPages extends JavaPlugin implements Listener{
     	updateInvToHashMap(player);
     	saveInvFromHashMapToFile(player);
     	removeInvFromHashMap(player);
+    }
+    
+    // =========================
+    // Death
+    // =========================
+    public void onDeath(PlayerDeathEvent event) {
+    	List<ItemStack> drops = event.getDrops();
+    	if(drops.contains(nextItem)) {
+    		event.getDrops().remove(nextItem);
+    	}
+    	
+    }
+    
+    // =========================
+    // Respawn
+    // =========================
+    public void onRespawn(PlayerRespawnEvent event) {
+    	Player player = event.getPlayer();
+    	String playerName = player.getName();
+    	playerInvs.get(playerName).showPage();
     }
     
 //    // =========================
