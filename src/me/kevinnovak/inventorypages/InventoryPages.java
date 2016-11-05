@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -205,21 +206,28 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
     // Death
     // =========================
+    @EventHandler
     public void onDeath(PlayerDeathEvent event) {
     	List<ItemStack> drops = event.getDrops();
-    	if(drops.contains(nextItem)) {
-    		event.getDrops().remove(nextItem);
-    	}
-    	
+        event.setKeepLevel(true);
+        ListIterator<ItemStack> litr = drops.listIterator();
+        while(litr.hasNext()){
+        	ItemStack stack = litr.next();
+        if (stack.equals(nextItem)) {
+            litr.remove();
+        }
+    }
     }
     
     // =========================
     // Respawn
     // =========================
+    @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
     	Player player = event.getPlayer();
     	String playerName = player.getName();
     	playerInvs.get(playerName).showPage();
+    	Bukkit.getLogger().info("playerName: " + playerName);
     }
     
 //    // =========================
