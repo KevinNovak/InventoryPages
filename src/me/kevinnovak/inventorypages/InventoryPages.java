@@ -208,6 +208,11 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
+    	Player player = event.getEntity();
+    	
+    	//save items before death
+    	updateInvToHashMap(player);
+    	
     	List<ItemStack> drops = event.getDrops();
         event.setKeepLevel(true);
         ListIterator<ItemStack> litr = drops.listIterator();
@@ -226,8 +231,12 @@ public class InventoryPages extends JavaPlugin implements Listener{
     public void onRespawn(PlayerRespawnEvent event) {
     	Player player = event.getPlayer();
     	String playerName = player.getName();
+    	
+    	// saves empty inventory (other than next and prev)
+    	// disable this if you want to keep items
+    	updateInvToHashMap(player);
+    	
     	playerInvs.get(playerName).showPage();
-    	Bukkit.getLogger().info("playerName: " + playerName);
     }
     
 //    // =========================
