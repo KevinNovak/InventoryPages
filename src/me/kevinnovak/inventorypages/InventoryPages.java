@@ -20,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -238,13 +239,6 @@ public class InventoryPages extends JavaPlugin implements Listener{
     	playerInvs.get(playerUUID).showPage();
     }
     
-//    // =========================
-//    // Open Inventory
-//    // =========================
-//    @EventHandler
-//    public void onInventoryOpen(InventoryOpenEvent event){
-//    }
-    
     // =========================
     // Inventory Click
     // =========================
@@ -268,12 +262,55 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
     // Inventory Pickup
     // =========================
+    @EventHandler
     public void onInventoryPickupItem(InventoryPickupItemEvent event) {
 		Item item = event.getItem();
     	if (item == nextItem) {
     		event.setCancelled(true);
     	}
     }
+    
+    // =========================
+    // Item Drop
+    // =========================
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+		Item item = event.getItemDrop();
+    	if (item == nextItem) {
+    		event.setCancelled(true);
+    	}
+    }
+    
+//    // =========================
+//    // Inventory Drag
+//    // =========================
+//    @EventHandler
+//    public void onInventoryDrag(InventoryDragEvent event) {
+//		Set<Integer> slots = event.getInventorySlots();
+//		for (Integer slot : slots) {
+//			event.getWhoClicked().sendMessage("Dragging Slot: " + slot);
+//		}
+//    	if (slots.contains(27) || slots.contains(35)) {
+//    		event.setCancelled(true);
+//    	}
+//    }
+//    
+//    // =========================
+//    // Inventory Creative
+//    // =========================
+//    @EventHandler
+//    public void onInventoryCreative(InventoryCreativeEvent event) {
+//		int slot = event.getSlot();
+//		event.getWhoClicked().sendMessage("Clicked: " + slot);
+//		if (event.getCurrentItem() == nextItem) {
+//			event.setCancelled(true);
+//		}
+//    	if (slot == 35) {
+//    		event.setCancelled(true);
+//    	} else if (slot == 27) {
+//    		event.setCancelled(true);
+//    	}
+//    }
     
     // ======================
     // Commands
