@@ -1,6 +1,6 @@
-name: InfiniteInventory
+name: InventoryPages
 version: 1.0.0
-main: me.kevinnovak.infiniteinventory.InfiniteInventory
+main: me.kevinnovak.inventorypages.InventoryPages
 author: KevinNovak
 description: Carry as many items as you'd like.
 
@@ -8,12 +8,12 @@ commands:
     testsave:
         usage: /<command>
         description: Test.
-        aliases: [iisave]
+        aliases: [ipsave]
     testnext:
         usage: /<command>
         description: Test.
-        aliases: [iinext]
+        aliases: [ipnext]
     testprev:
         usage: /<command>
         description: Test.
-        aliases: [iiprev]
+        aliases: [ipprev]

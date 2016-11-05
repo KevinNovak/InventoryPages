@@ -26,7 +26,7 @@
  * either expressed or implied, of anybody else.
  */
 
-package me.kevinnovak.infiniteinventory;
+package me.kevinnovak.inventorypages;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;

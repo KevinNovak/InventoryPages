@@ -1,4 +1,4 @@
-package me.kevinnovak.infiniteinventory;
+package me.kevinnovak.inventorypages;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class InfiniteInventory extends JavaPlugin implements Listener{
+public class InventoryPages extends JavaPlugin implements Listener{
 	private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
 	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
     public File invsFile = new File(getDataFolder()+"/inventories.yml");
@@ -37,14 +37,14 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
             try {
                 MetricsLite metrics = new MetricsLite(this);
                 metrics.start();
-                Bukkit.getServer().getLogger().info("[InfiniteInventory] Metrics Enabled!");
+                Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Enabled!");
             } catch (IOException e) {
-                Bukkit.getServer().getLogger().info("[InfiniteInventory] Failed to Start Metrics.");
+                Bukkit.getServer().getLogger().info("[InventoryPages] Failed to Start Metrics.");
             }
         } else {
-            Bukkit.getServer().getLogger().info("[InfiniteInventory] Metrics Disabled.");
+            Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Disabled.");
         }
-        Bukkit.getServer().getLogger().info("[InfiniteInventory] Plugin Enabled!");
+        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Enabled!");
         
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
         	try {
@@ -61,7 +61,7 @@ public class InfiniteInventory extends JavaPlugin implements Listener{
     // ======================
     public void onDisable() {
     	saveAllInvs();
-        Bukkit.getServer().getLogger().info("[InfiniteInventory] Plugin Disabled!");
+        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
     }
     
     private void saveAllInvs() {

@@ -1,7 +1,7 @@
-# Configuration file for InfiniteInventory
+# Configuration file for InventoryPages
 # Created by KevinNovak
 
 # Whether or not to collect data on plugin usage
-# Viewable at http://mcstats.org/plugin/InfiniteInventory/
+# Viewable at http://mcstats.org/plugin/InventoryPages/
 # default: metrics: true
 metrics: true

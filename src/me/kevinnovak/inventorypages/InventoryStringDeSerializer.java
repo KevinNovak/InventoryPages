@@ -1,4 +1,4 @@
-package me.kevinnovak.infiniteinventory;
+package me.kevinnovak.inventorypages;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
