@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class CustomInventory {
 	private Player player;
 	private ItemStack nextItem = new ItemStack(Material.DIAMOND);
-	private ItemStack prevItem;
+	//private ItemStack prevItem;
 	private Integer page = 0;
 	private HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();;
 	
