@@ -2,7 +2,6 @@ package me.kevinnovak.inventorypages;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -27,7 +26,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     public FileConfiguration invsData = YamlConfiguration.loadConfiguration(invsFile);
     
 	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
-	
+
     // ======================
     // Enable
     // ======================
@@ -49,11 +48,11 @@ public class InventoryPages extends JavaPlugin implements Listener{
             Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Disabled.");
         }
         
+        // load all online players into hashmap
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
         	try {
-				loadInv(player);
+        		loadInvFromFileIntoHashMap(player);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -65,61 +64,102 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // Disable
     // ======================
     public void onDisable() {
-    	saveAllInvs();
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        	// update inventories to hashmap and save to file
+        	updateInvToHashMap(player);
+			saveInvFromHashMapToFile(player);
+        }
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
     }
     
-    private void saveAllInvs() {
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-        	playerInvs.get(player.getName()).saveCurrentPage();
-        }
-    	for(Map.Entry<String, CustomInventory> playerInv : playerInvs.entrySet()) {
-    		saveInv(playerInv.getKey());
-    	}
-    }
-    
-    private void saveInv(String player) {
-    	for(Entry<Integer, ItemStack[]> page : playerInvs.get(player).getItems().entrySet()) {
-    		for(int i = 0; i < page.getValue().length; i++) {
-        		invsData.set(player + "." + page.getKey() + "." + i, InventoryStringDeSerializer.toBase64(page.getValue()[i]));
-    		}
-    	}
-    	saveInvsFile();
+	// =========================
+    // Save Inventory From HashMap To File
+    // =========================
+	public void saveInvFromHashMapToFile(Player player) {
+		String playerName = player.getName();
+		if (playerInvs.containsKey(playerName)) {
+	    	for(Entry<Integer, ItemStack[]> pageItemEntry : playerInvs.get(playerName).getItems().entrySet()) {
+	    		for(int i = 0; i < pageItemEntry.getValue().length; i++) {
+	        		invsData.set(playerName + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue()[i]));
+	    		}
+	    	}
+	    	saveInvsFile();
+		}
 	}
+	
+	// =========================
+    // Load Inventory From File Intro HashMap
+    // =========================
+	@SuppressWarnings("deprecation")
+	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
+		String playerName = player.getName();
+    	CustomInventory inventory = new CustomInventory(player);
     
+    	if(invsData.contains(playerName)) {
+    		HashMap<Integer, ItemStack[]> pageItemHashMap = new HashMap<Integer, ItemStack[]>();
+
+        	int pageNum = 0;
+        	Boolean pageExists = invsData.contains(playerName + "." + pageNum);
+
+        	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
+        	while (pageExists) {
+        		Bukkit.getLogger().info("Loading " + playerName + "'s Page: " + pageNum);
+        		ItemStack[] pageItems = new ItemStack[27];
+        		for(int i = 0; i < pageItems.length; i++) {
+        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(playerName + "." + pageNum + "." + i))[0];
+        			if (item != null) {
+        				Bukkit.getLogger().info("Valid item: " + item.getTypeId());
+        				pageItems[i] = item;
+        			}
+        		}
+        		pageItemHashMap.put(pageNum, pageItems);
+        		
+        		pageNum++;
+        		pageExists = invsData.contains(playerName + "." + pageNum);
+        	}
+        	inventory.setItems(pageItemHashMap);
+
+    	} else {
+    		// TODO player has no inventory in file or hashmap
+    		// create a new inventory
+    		inventory.saveCurrentPage();
+    	}
+    	playerInvs.put(playerName, inventory);
+    	playerInvs.get(playerName).showPage(0);
+	}
+	
+	// =========================
+    // Update Inventory To HashMap
+    // =========================
+	public void updateInvToHashMap(Player player) {
+		String playerName = player.getName();
+		if(playerInvs.containsKey(playerName)) {
+			playerInvs.get(playerName).saveCurrentPage();
+		} else {
+			// TODO player has no inventory in hashmap
+			// create inventory and save to hashmap
+		}
+	}
+	
+	// =========================
+    // Remove Inventory From HashMap
+    // =========================
+	public void removeInvFromHashMap(Player player) {
+		String playerName = player.getName();
+		if(playerInvs.containsKey(playerName)) {
+			playerInvs.remove(playerName);
+		}
+	}
+	
+	// =========================
+    // Save Inventory File
+    // =========================
     public void saveInvsFile() {
         try {
         	invsData.save(invsFile);
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-    
-    @SuppressWarnings("deprecation")
-	public void loadInv(Player player) throws IOException {
-    	HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();
-    	CustomInventory inventory = new CustomInventory(player);
-    	int pageNum = 0;
-    	Boolean pageExists = invsData.contains(player.getName() + "." + pageNum);
-    	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
-    	while (pageExists) {
-    		Bukkit.getLogger().info("Loading " + player.getName() + "'s Page: " + pageNum);
-    		ItemStack[] pageItems = new ItemStack[27];
-    		for(int i = 0; i < 27; i++) {
-    			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(player.getName() + "." + pageNum + "." + i))[0];
-    			if (item != null) {
-    				Bukkit.getLogger().info("Valid item: " + item.getTypeId());
-    				pageItems[i] = item;
-    			}
-    		}
-    		items.put(pageNum, pageItems);
-    		pageNum++;
-    		pageExists = invsData.contains(player.getName() + "." + pageNum);
-    	}
-    	inventory.setItems(items);
-    	playerInvs.put(player.getName(), inventory);
-    	playerInvs.get(player.getName()).showPage(0);
     }
 
 	// =========================
@@ -128,20 +168,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) throws InterruptedException, IOException {
     	Player player = event.getPlayer();
-    	
-    	//TEMP:
-    	loadInv(player);
-    	playerInvs.get(player.getName()).setPlayer(player);
-    	playerInvs.get(player.getName()).showPage(0);
-    	
-    	if (!(playerInvs.containsKey(player.getName()) && invsData.contains(player.getName()))) {
-    		CustomInventory playerInv = new CustomInventory(player);
-    		playerInvs.put(player.getName(), playerInv);
-    	} else {
-    		loadInv(player);
-    		playerInvs.get(player.getName()).setPlayer(player);
-    		playerInvs.get(player.getName()).showPage(0);
-    	}
+    	loadInvFromFileIntoHashMap(player);
     }
     
     // =========================
@@ -150,9 +177,9 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) throws InterruptedException {
     	Player player = event.getPlayer();
-    	if (!playerInvs.containsKey(player.getName())) {
-    		playerInvs.get(player.getName()).saveCurrentPage();
-    	}
+    	updateInvToHashMap(player);
+    	saveInvFromHashMapToFile(player);
+    	removeInvFromHashMap(player);
     }
     
 //    // =========================

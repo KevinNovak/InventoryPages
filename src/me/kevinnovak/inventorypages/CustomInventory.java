@@ -19,31 +19,12 @@ public class CustomInventory {
 		this.saveCurrentPage();
 	}
 	
-	void setPlayer(Player player) {
-		this.player = player;
-	}
-	
-	void createPage(Integer page) {
-		ItemStack[] pageItems = new ItemStack[27];
-		for(int i=0; i<27; i++) {
-			pageItems[i] = null;
-		}
-		this.items.put(page, pageItems);
-	}
-	
 	void saveCurrentPage() {
 		ItemStack[] pageItems = new ItemStack[27];
 		for(int i=0; i<27; i++) {
 			pageItems[i] = this.player.getInventory().getItem(i+9);
 		}
 		this.items.put(this.page, pageItems);
-	}
-	
-	Boolean pageExists(Integer page) {
-		if (items.containsKey(page)) {
-		    return true;
-		}
-		return false;
 	}
 	
 	void showPage() {
@@ -72,6 +53,21 @@ public class CustomInventory {
 		}
 		this.showPage();
 		this.saveCurrentPage();
+	}
+	
+	Boolean pageExists(Integer page) {
+		if (items.containsKey(page)) {
+		    return true;
+		}
+		return false;
+	}
+	
+	void createPage(Integer page) {
+		ItemStack[] pageItems = new ItemStack[27];
+		for(int i=0; i<27; i++) {
+			pageItems[i] = null;
+		}
+		this.items.put(page, pageItems);
 	}
 	
 	void prevPage() {
