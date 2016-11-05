@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class CustomInventory {
 	private Player player;
 	private ItemStack prevItem, nextItem, noActionItem;
-	private Integer page = 0;
+	private Integer page = 0, maxPage = 1;
 	private HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();;
 	
 	CustomInventory(Player player, ItemStack prevItem, ItemStack nextItem, ItemStack noActionItem) {
@@ -16,6 +16,11 @@ public class CustomInventory {
 		this.prevItem = prevItem;
 		this.nextItem = nextItem;
 		this.noActionItem = noActionItem;
+		for (int i = 2; i < 101; i ++) {
+			if (player.hasPermission("inventorypages.pages." + i)) {
+				this.maxPage = i - 1;
+			}
+		}
 		this.saveCurrentPage();
 		ItemStack itemInPrevItemSlot = this.items.get(0)[18];
 		ItemStack itemInNextItemSlot = this.items.get(0)[26];
@@ -31,6 +36,7 @@ public class CustomInventory {
 			}
 			this.items.get(1)[1] = itemInNextItemSlot;
 		}
+		player.sendMessage("Your max pages are: " + (maxPage + 1));
 	}
 	
 	void setPlayer(Player player) {
@@ -60,20 +66,26 @@ public class CustomInventory {
 					this.player.getInventory().setItem(i+9, prevItem);
 				}
 			} else if (i == 26) {
-				this.player.getInventory().setItem(i+9, nextItem);
+				if(page == maxPage) {
+					this.player.getInventory().setItem(i+9, noActionItem);
+				} else {
+					this.player.getInventory().setItem(i+9, nextItem);
+				}
 			}
 		}
 		player.sendMessage("Showing Page: " + page);
 	}
 	
 	void nextPage() {
-		this.saveCurrentPage();
-		this.page = this.page + 1;
-		if (!pageExists(this.page)) {
-			createPage(this.page);
+		if (this.page < maxPage) {
+			this.saveCurrentPage();
+			this.page = this.page + 1;
+			if (!pageExists(this.page)) {
+				createPage(this.page);
+			}
+			this.showPage();
+			this.saveCurrentPage();
 		}
-		this.showPage();
-		this.saveCurrentPage();
 	}
 	
 	Boolean pageExists(Integer page) {
