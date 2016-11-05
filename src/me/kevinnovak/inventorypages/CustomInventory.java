@@ -7,25 +7,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class CustomInventory {
 	private Player player;
-	private ItemStack prevItem;
-	private ItemStack nextItem;
+	private ItemStack prevItem, nextItem, noActionItem;
 	private Integer page = 0;
 	private HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();;
 	
-	CustomInventory(Player player, ItemStack prevItem, ItemStack nextItem) {
+	CustomInventory(Player player, ItemStack prevItem, ItemStack nextItem, ItemStack noActionItem) {
 		this.player = player;
 		this.prevItem = prevItem;
 		this.nextItem = nextItem;
+		this.noActionItem = noActionItem;
 		this.saveCurrentPage();
 		ItemStack itemInPrevItemSlot = this.items.get(0)[18];
 		ItemStack itemInNextItemSlot = this.items.get(0)[26];
-		if(itemInPrevItemSlot != prevItem && itemInPrevItemSlot != null) {
+		if(itemInPrevItemSlot != prevItem && itemInPrevItemSlot != noActionItem && itemInPrevItemSlot != null) {
 			if (!pageExists(1)) {
 				createPage(1);
 			}
 			this.items.get(1)[0] = itemInPrevItemSlot;
 		}
-		if(itemInNextItemSlot != nextItem && itemInNextItemSlot != null) {
+		if(itemInNextItemSlot != nextItem && itemInNextItemSlot != noActionItem && itemInNextItemSlot != null) {
 			if (!pageExists(1)) {
 				createPage(1);
 			}
@@ -54,7 +54,11 @@ public class CustomInventory {
 		for(int i=0; i<27; i++) {
 			this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
 			if (i== 18) {
-				this.player.getInventory().setItem(i+9, prevItem);
+				if(page == 0) {
+					this.player.getInventory().setItem(i+9, noActionItem);
+				} else {
+					this.player.getInventory().setItem(i+9, prevItem);
+				}
 			} else if (i == 26) {
 				this.player.getInventory().setItem(i+9, nextItem);
 			}

@@ -33,7 +33,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     
 	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
 	
-	private ItemStack nextItem, prevItem;
+	private ItemStack nextItem, prevItem, noActionItem;
 
     // ======================
     // Enable
@@ -95,6 +95,11 @@ public class InventoryPages extends JavaPlugin implements Listener{
         ItemMeta nextItemMeta = nextItem.getItemMeta();
         nextItemMeta.setDisplayName("Next");
         nextItem.setItemMeta(nextItemMeta);
+        
+    	noActionItem = new ItemStack(Material.STONE);
+        ItemMeta noActionItemMeta = noActionItem.getItemMeta();
+        noActionItemMeta.setDisplayName("No pages");
+        noActionItem.setItemMeta(noActionItemMeta);
     }
     
 	// =========================
@@ -127,7 +132,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	@SuppressWarnings("deprecation")
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
 		String playerUUID = player.getUniqueId().toString();
-    	CustomInventory inventory = new CustomInventory(player, prevItem, nextItem);
+    	CustomInventory inventory = new CustomInventory(player, prevItem, nextItem, noActionItem);
     
 		File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
@@ -223,7 +228,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
         ListIterator<ItemStack> litr = drops.listIterator();
         while(litr.hasNext()){
         	ItemStack stack = litr.next();
-        if (stack.equals(prevItem) || stack.equals(nextItem)) {
+        if (stack.equals(prevItem) || stack.equals(nextItem) || stack.equals(noActionItem)) {
             litr.remove();
         }
     }
@@ -270,7 +275,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void onInventoryPickupItem(InventoryPickupItemEvent event) {
 		Item item = event.getItem();
-    	if (item == prevItem || item == nextItem) {
+    	if (item == prevItem || item == nextItem || item == noActionItem) {
     		event.setCancelled(true);
     	}
     }
@@ -281,7 +286,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Item item = event.getItemDrop();
-    	if (item == prevItem || item == nextItem) {
+    	if (item == prevItem || item == nextItem || item == noActionItem) {
     		event.setCancelled(true);
     	}
     }
