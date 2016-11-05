@@ -22,9 +22,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class InventoryPages extends JavaPlugin implements Listener{
 	private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
-	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
+	
     public File invsFile = new File(getDataFolder()+"/inventories.yml");
     public FileConfiguration invsData = YamlConfiguration.loadConfiguration(invsFile);
+    
+	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
 	
     // ======================
     // Enable
@@ -32,7 +34,9 @@ public class InventoryPages extends JavaPlugin implements Listener{
     public void onEnable() {
         saveDefaultConfig();
         saveInvsFile();
+        
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
+        
         if (getConfig().getBoolean("metrics")) {
             try {
                 MetricsLite metrics = new MetricsLite(this);
@@ -44,7 +48,6 @@ public class InventoryPages extends JavaPlugin implements Listener{
         } else {
             Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Disabled.");
         }
-        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Enabled!");
         
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
         	try {
@@ -54,6 +57,8 @@ public class InventoryPages extends JavaPlugin implements Listener{
 				e.printStackTrace();
 			}
         }
+        
+        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Enabled!");
     }
 
 	// ======================
