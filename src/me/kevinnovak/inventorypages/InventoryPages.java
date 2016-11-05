@@ -13,11 +13,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -263,6 +265,16 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	    		playerInvs.get(player.getName()).prevPage();
 	    	}
 		}
+    }
+    
+    // =========================
+    // Inventory Pickup
+    // =========================
+    public void onInventoryPickupItem(InventoryPickupItemEvent event) {
+		Item item = event.getItem();
+    	if (item == nextItem) {
+    		event.setCancelled(true);
+    	}
     }
     
     // ======================
