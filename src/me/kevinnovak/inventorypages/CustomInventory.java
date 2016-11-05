@@ -16,6 +16,20 @@ public class CustomInventory {
 		this.player = player;
 		this.nextItem = nextItem;
 		this.saveCurrentPage();
+		ItemStack itemInPrevItemSlot = this.items.get(0)[18];
+		ItemStack itemInNextItemSlot = this.items.get(0)[26];
+		if(itemInPrevItemSlot != nextItem && itemInPrevItemSlot != null) {
+			if (!pageExists(1)) {
+				createPage(1);
+			}
+			this.items.get(1)[0] = itemInPrevItemSlot;
+		}
+		if(itemInNextItemSlot != nextItem && itemInNextItemSlot != null) {
+			if (!pageExists(1)) {
+				createPage(1);
+			}
+			this.items.get(1)[1] = itemInNextItemSlot;
+		}
 	}
 	
 	void setPlayer(Player player) {
