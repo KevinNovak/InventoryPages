@@ -29,9 +29,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class InventoryPages extends JavaPlugin implements Listener{
 	private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
-	
-    public File invsFile = new File(getDataFolder()+"/inventories.yml");
-    public FileConfiguration invsData = YamlConfiguration.loadConfiguration(invsFile);
     
 	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
 	
@@ -42,7 +39,6 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // ======================
     public void onEnable() {
         saveDefaultConfig();
-        saveInvsFile();
         
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
         
@@ -101,12 +97,21 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	public void saveInvFromHashMapToFile(Player player) {
 		String playerUUID = player.getUniqueId().toString();
 		if (playerInvs.containsKey(playerUUID)) {
+			File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
+			FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
+			
 	    	for(Entry<Integer, ItemStack[]> pageItemEntry : playerInvs.get(playerUUID).getItems().entrySet()) {
 	    		for(int i = 0; i < pageItemEntry.getValue().length; i++) {
-	        		invsData.set(playerUUID + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue()[i]));
+	    			playerData.set(playerUUID + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue()[i]));
 	    		}
 	    	}
-	    	saveInvsFile();
+	    	
+	    	try {
+				playerData.save(playerFile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -118,18 +123,21 @@ public class InventoryPages extends JavaPlugin implements Listener{
 		String playerUUID = player.getUniqueId().toString();
     	CustomInventory inventory = new CustomInventory(player, nextItem);
     
-    	if(invsData.contains(playerUUID)) {
+		File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
+		FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
+		
+    	if(playerFile.exists() && playerData.contains(playerUUID)) {
     		HashMap<Integer, ItemStack[]> pageItemHashMap = new HashMap<Integer, ItemStack[]>();
 
         	int pageNum = 0;
-        	Boolean pageExists = invsData.contains(playerUUID + "." + pageNum);
+        	Boolean pageExists = playerData.contains(playerUUID + "." + pageNum);
 
         	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
         	while (pageExists) {
         		Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
         		ItemStack[] pageItems = new ItemStack[27];
         		for(int i = 0; i < pageItems.length; i++) {
-        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(invsData.getString(playerUUID + "." + pageNum + "." + i))[0];
+        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString(playerUUID + "." + pageNum + "." + i))[0];
         			if (item != null) {
         				Bukkit.getLogger().info("Valid item: " + item.getTypeId());
         				pageItems[i] = item;
@@ -138,7 +146,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
         		pageItemHashMap.put(pageNum, pageItems);
         		
         		pageNum++;
-        		pageExists = invsData.contains(playerUUID + "." + pageNum);
+        		pageExists = playerData.contains(playerUUID + "." + pageNum);
         	}
         	inventory.setItems(pageItemHashMap);
 
@@ -173,17 +181,6 @@ public class InventoryPages extends JavaPlugin implements Listener{
 			playerInvs.remove(playerUUID);
 		}
 	}
-	
-	// =========================
-    // Save Inventory File
-    // =========================
-    public void saveInvsFile() {
-        try {
-        	invsData.save(invsFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 	// =========================
     // Login
