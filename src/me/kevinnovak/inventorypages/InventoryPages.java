@@ -28,8 +28,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class InventoryPages extends JavaPlugin implements Listener{
 	private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
-    
-	InventoryStringDeSerializer serializer = new InventoryStringDeSerializer();
     ColorConverter colorConv = new ColorConverter(this);
 	
 	private ItemStack nextItem, prevItem, noActionItem;
