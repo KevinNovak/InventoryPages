@@ -87,19 +87,19 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // ======================
     @SuppressWarnings("deprecation")
 	public void initItems() {
-    	prevItem = new ItemStack(getConfig().getInt("items.prev.ID"));
+    	prevItem = new ItemStack(getConfig().getInt("items.prev.ID"), 1, (short) getConfig().getInt("items.prev.variation"));
         ItemMeta prevItemMeta = prevItem.getItemMeta();
         prevItemMeta.setDisplayName(colorConv.convertConfig("items.prev.name"));
         prevItemMeta.setLore(colorConv.convertConfigList("items.prev.lore"));
         prevItem.setItemMeta(prevItemMeta);
     	
-    	nextItem = new ItemStack(getConfig().getInt("items.next.ID"));
+        nextItem = new ItemStack(getConfig().getInt("items.next.ID"), 1, (short) getConfig().getInt("items.next.variation"));
         ItemMeta nextItemMeta = nextItem.getItemMeta();
         nextItemMeta.setDisplayName(colorConv.convertConfig("items.next.name"));
         nextItemMeta.setLore(colorConv.convertConfigList("items.next.lore"));
         nextItem.setItemMeta(nextItemMeta);
         
-    	noActionItem = new ItemStack(getConfig().getInt("items.noAction.ID"));
+        noActionItem = new ItemStack(getConfig().getInt("items.noAction.ID"), 1, (short) getConfig().getInt("items.noAction.variation"));
         ItemMeta noActionItemMeta = noActionItem.getItemMeta();
         noActionItemMeta.setDisplayName(colorConv.convertConfig("items.noAction.name"));
         noActionItemMeta.setLore(colorConv.convertConfigList("items.noAction.lore"));

@@ -8,17 +8,20 @@ metrics: true
 
 items:
     prev:
-        ID: 388
+        ID: 160
+        variation: 9
         name: '&6Prev Page'
         lore:
         - '&3Page {CURRENT}/{MAX}'
     next:
-        ID: 264
+        ID: 160
+        variation: 9
         name: '&6Next Page'
         lore:
         - '&3Page {CURRENT}/{MAX}'
     noAction:
-        ID: 1
+        ID: 160
+        variation: 7
         name: '&6No Pages'
         lore:
         - '&3Page {CURRENT}/{MAX}'
