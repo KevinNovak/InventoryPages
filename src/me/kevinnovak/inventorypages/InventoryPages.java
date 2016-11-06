@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -232,8 +231,12 @@ public class InventoryPages extends JavaPlugin implements Listener{
         ListIterator<ItemStack> litr = drops.listIterator();
         while(litr.hasNext()){
         	ItemStack stack = litr.next();
-        if (stack.equals(prevItem) || stack.equals(nextItem) || stack.equals(noActionItem)) {
+        if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
             litr.remove();
+        } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
+        	litr.remove();
+        } else if (stack.getType() == noActionItem.getType() && stack.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
+        	litr.remove();
         }
     }
     }
@@ -278,10 +281,14 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
     @EventHandler
     public void onInventoryPickupItem(InventoryPickupItemEvent event) {
-		Item item = event.getItem();
-    	if (item == prevItem || item == nextItem || item == noActionItem) {
-    		event.setCancelled(true);
-    	}
+		ItemStack item = event.getItem().getItemStack();
+        if (item.getType() == prevItem.getType() && item.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
+            event.setCancelled(true);
+        } else if (item.getType() == nextItem.getType() && item.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
+        	event.setCancelled(true);
+        } else if (item.getType() == noActionItem.getType() && item.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
+        	event.setCancelled(true);
+        }
     }
     
     // =========================
@@ -289,10 +296,14 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-		Item item = event.getItemDrop();
-    	if (item == prevItem || item == nextItem || item == noActionItem) {
-    		event.setCancelled(true);
-    	}
+		ItemStack item = event.getItemDrop().getItemStack();
+        if (item.getType() == prevItem.getType() && item.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
+            event.setCancelled(true);
+        } else if (item.getType() == nextItem.getType() && item.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
+        	event.setCancelled(true);
+        } else if (item.getType() == noActionItem.getType() && item.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
+        	event.setCancelled(true);
+        }
     }
     
 //    // =========================
