@@ -1,9 +1,11 @@
 package me.kevinnovak.inventorypages;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class CustomInventory {
 	private Player player;
@@ -58,19 +60,52 @@ public class CustomInventory {
 	void showPage(Integer page) {
 		this.page = page;
 		for(int i=0; i<27; i++) {
-			this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
-			if (i== 18) {
+			if (i == 18) {
 				if(page == 0) {
+					ItemMeta noActionItemMeta = noActionItem.getItemMeta();
+			        List<String> noActionItemLore = noActionItemMeta.getLore();
+			        for (int j = 0; j < noActionItemLore.size(); j++) {
+			        	noActionItemLore.set(j, noActionItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
+			        	player.sendMessage("Page: " + page.toString());
+			        }
+			        noActionItemMeta.setLore(noActionItemLore);
+			        noActionItem.setItemMeta(noActionItemMeta);
 					this.player.getInventory().setItem(i+9, noActionItem);
 				} else {
+					ItemMeta prevItemMeta = prevItem.getItemMeta();
+			        List<String> prevItemLore = prevItemMeta.getLore();
+			        for (int j = 0; j < prevItemLore.size(); j++) {
+			        	prevItemLore.set(j, prevItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
+			        	player.sendMessage("Page: " + page.toString());
+			        }
+			        prevItemMeta.setLore(prevItemLore);
+			        prevItem.setItemMeta(prevItemMeta);
 					this.player.getInventory().setItem(i+9, prevItem);
 				}
 			} else if (i == 26) {
 				if(page == maxPage) {
+					ItemMeta noActionItemMeta = noActionItem.getItemMeta();
+			        List<String> noActionItemLore = noActionItemMeta.getLore();
+			        for (int j = 0; j < noActionItemLore.size(); j++) {
+			        	noActionItemLore.set(j, noActionItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
+			        	player.sendMessage("Page: " + page.toString());
+			        }
+			        noActionItemMeta.setLore(noActionItemLore);
+			        noActionItem.setItemMeta(noActionItemMeta);
 					this.player.getInventory().setItem(i+9, noActionItem);
 				} else {
+					ItemMeta nextItemMeta = nextItem.getItemMeta();
+			        List<String> nextItemLore = nextItemMeta.getLore();
+			        for (int j = 0; j < nextItemLore.size(); j++) {
+			        	nextItemLore.set(j, nextItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
+			        	player.sendMessage("Page: " + page.toString());
+			        }
+			        nextItemMeta.setLore(nextItemLore);
+			        nextItem.setItemMeta(nextItemMeta);
 					this.player.getInventory().setItem(i+9, nextItem);
 				}
+			} else {
+				this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
 			}
 		}
 		player.sendMessage("Showing Page: " + page);
