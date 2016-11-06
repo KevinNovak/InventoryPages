@@ -65,10 +65,6 @@ public class CustomInventory {
 		player.sendMessage("Your max pages are: " + (maxPage + 1));
 	}
 	
-	void setPlayer(Player player) {
-		this.player = player;
-	}
-	
 	void saveCurrentPage() {
 		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
 		for(int i=0; i<27; i++) {
