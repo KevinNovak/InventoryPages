@@ -1,5 +1,7 @@
 package me.kevinnovak.inventorypages;
 
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,34 +23,45 @@ public class CustomInventory {
 		this.nextItem = nextItem;
 		this.nextPos = nextPos;
 		this.noActionItem = noActionItem;
+		
+		// check for permissions
 		for (int i = 2; i < 101; i ++) {
 			if (player.hasPermission("inventorypages.pages." + i)) {
 				this.maxPage = i - 1;
 			}
 		}
-		this.saveCurrentPage();
-//		ItemStack itemInPrevItemSlot = this.items.get(0).get(prevPos);
-//		ItemStack itemInNextItemSlot = this.items.get(0).get(nextPos);
-//		if(itemInPrevItemSlot != null) {
-//			if(itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
-//				if(itemInPrevItemSlot.getType() != noActionItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
-//					if (!pageExists(1)) {
-//						createPage(1);
-//					}
-//					this.items.get(1).set(0, itemInPrevItemSlot);
-//				}
-//			}
-//		}
-//		if(itemInNextItemSlot != null) {
-//			if(itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
-//				if(itemInNextItemSlot.getType() != noActionItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
-//					if (!pageExists(1)) {
-//						createPage(1);
-//					}
-//					this.items.get(1).set(1, itemInNextItemSlot);
-//				}
-//			}
-//		}
+		
+		// create pages
+		for (int i=0; i<maxPage+1; i++) {
+			if(!pageExists(i)) {
+				createPage(i);
+			}
+		}
+		
+		saveCurrentPage();
+		
+		// check for items in essential slots
+		ItemStack itemInPrevItemSlot = this.player.getInventory().getItem(prevPos+9);
+		ItemStack itemInNextItemSlot = this.player.getInventory().getItem(nextPos+9);
+		if(itemInPrevItemSlot != null) {
+			if(itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
+				if(itemInPrevItemSlot.getType() != noActionItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+					SimpleEntry<Integer, Integer> nextFreeSpace = nextFreeSpace();
+					this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInPrevItemSlot);
+					this.player.getInventory().setItem(prevPos, null);
+				}
+			}
+		}
+		if(itemInNextItemSlot != null) {
+			if(itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
+				if(itemInNextItemSlot.getType() != noActionItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+					SimpleEntry<Integer, Integer> nextFreeSpace = nextFreeSpace();
+					this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInNextItemSlot);
+					this.player.getInventory().setItem(nextPos, null);
+				}
+			}
+		}
+		
 		player.sendMessage("Your max pages are: " + (maxPage + 1));
 	}
 	
@@ -72,9 +85,6 @@ public class CustomInventory {
 	
 	void showPage(Integer page) {
 		this.page = page;
-		if (!pageExists(page)) {
-			createPage(page);
-		}
 		Boolean foundPrev = false;
 		Boolean foundNext = false;
 		for(int i=0; i<27; i++) {
@@ -124,9 +134,6 @@ public class CustomInventory {
 		if (this.page < maxPage) {
 			this.saveCurrentPage();
 			this.page = this.page + 1;
-			if (!pageExists(this.page)) {
-				createPage(this.page);
-			}
 			this.showPage();
 			this.saveCurrentPage();
 		}
@@ -164,4 +171,15 @@ public class CustomInventory {
 		this.items = items;
 	}
 	
+	SimpleEntry<Integer, Integer> nextFreeSpace() {
+		for (Integer i=0; i<maxPage; i++) {
+			for(Integer j=0; j<25; j++) {
+				if(items.get(i).get(j) == null) {
+					SimpleEntry<Integer, Integer> pageAndPos = new AbstractMap.SimpleEntry<Integer, Integer>(i, j);
+					return pageAndPos;
+				}
+			}
+		}
+		return null;
+	}
 }

@@ -164,10 +164,6 @@ public class InventoryPages extends JavaPlugin implements Listener{
         	}
         	inventory.setItems(pageItemHashMap);
 
-    	} else {
-    		// TODO player has no inventory in file or hashmap
-    		// create a new inventory
-    		inventory.saveCurrentPage();
     	}
     	playerInvs.put(playerUUID, inventory);
     	playerInvs.get(playerUUID).showPage(0);
