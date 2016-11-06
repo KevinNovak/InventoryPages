@@ -84,7 +84,9 @@ public class CustomInventory {
 		ItemMeta itemMeta = modItem.getItemMeta();
         List<String> itemLore = itemMeta.getLore();
         for (int j = 0; j < itemLore.size(); j++) {
-        	itemLore.set(j, itemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
+        	Integer currentPageUser = page + 1;
+        	Integer maxPageUser = maxPage + 1;
+        	itemLore.set(j, itemLore.get(j).replace("{CURRENT}", currentPageUser.toString()).replace("{MAX}", maxPageUser.toString()));
         }
         itemMeta.setLore(itemLore);
         modItem.setItemMeta(itemMeta);

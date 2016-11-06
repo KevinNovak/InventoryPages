@@ -12,16 +12,14 @@ items:
         name: '&6Prev Page'
         lore:
         - '&3Page {CURRENT}/{MAX}'
-        - '&3This is a test'
     next:
         ID: 264
         name: '&6Next Page'
         lore:
         - '&3Page {CURRENT}/{MAX}'
-        - '&3This is a test'
     noAction:
         ID: 1
         name: '&6No Pages'
         lore:
         - '&3Page {CURRENT}/{MAX}'
-        - '&3This is a test'    
+        
