@@ -26,17 +26,25 @@ public class CustomInventory {
 		this.saveCurrentPage();
 		ItemStack itemInPrevItemSlot = this.items.get(0)[18];
 		ItemStack itemInNextItemSlot = this.items.get(0)[26];
-		if(itemInPrevItemSlot != prevItem && itemInPrevItemSlot != noActionItem && itemInPrevItemSlot != null) {
-			if (!pageExists(1)) {
-				createPage(1);
+		if(itemInPrevItemSlot != null) {
+			if(itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
+				if(itemInPrevItemSlot.getType() != noActionItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+					if (!pageExists(1)) {
+						createPage(1);
+					}
+					this.items.get(1)[0] = itemInPrevItemSlot;
+				}
 			}
-			this.items.get(1)[0] = itemInPrevItemSlot;
 		}
-		if(itemInNextItemSlot != nextItem && itemInNextItemSlot != noActionItem && itemInNextItemSlot != null) {
-			if (!pageExists(1)) {
-				createPage(1);
+		if(itemInNextItemSlot != null) {
+			if(itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
+				if(itemInNextItemSlot.getType() != noActionItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+					if (!pageExists(1)) {
+						createPage(1);
+					}
+					this.items.get(1)[1] = itemInNextItemSlot;
+				}
 			}
-			this.items.get(1)[1] = itemInNextItemSlot;
 		}
 		player.sendMessage("Your max pages are: " + (maxPage + 1));
 	}
