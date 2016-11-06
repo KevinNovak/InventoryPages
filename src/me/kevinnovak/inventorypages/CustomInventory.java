@@ -1,5 +1,6 @@
 package me.kevinnovak.inventorypages;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,13 +11,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class CustomInventory {
 	private Player player;
 	private ItemStack prevItem, nextItem, noActionItem;
-	private Integer page = 0, maxPage = 1;
-	private HashMap<Integer, ItemStack[]> items = new HashMap<Integer, ItemStack[]>();;
+	private Integer page = 0, maxPage = 1, prevPos, nextPos;
+	private HashMap<Integer, ArrayList<ItemStack>> items = new HashMap<Integer, ArrayList<ItemStack>>();;
 	
-	CustomInventory(Player player, ItemStack prevItem, ItemStack nextItem, ItemStack noActionItem) {
+	CustomInventory(Player player, ItemStack prevItem, Integer prevPos, ItemStack nextItem,  Integer nextPos, ItemStack noActionItem) {
 		this.player = player;
 		this.prevItem = prevItem;
+		this.prevPos = prevPos;
 		this.nextItem = nextItem;
+		this.nextPos = nextPos;
 		this.noActionItem = noActionItem;
 		for (int i = 2; i < 101; i ++) {
 			if (player.hasPermission("inventorypages.pages." + i)) {
@@ -24,28 +27,28 @@ public class CustomInventory {
 			}
 		}
 		this.saveCurrentPage();
-		ItemStack itemInPrevItemSlot = this.items.get(0)[18];
-		ItemStack itemInNextItemSlot = this.items.get(0)[26];
-		if(itemInPrevItemSlot != null) {
-			if(itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
-				if(itemInPrevItemSlot.getType() != noActionItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
-					if (!pageExists(1)) {
-						createPage(1);
-					}
-					this.items.get(1)[0] = itemInPrevItemSlot;
-				}
-			}
-		}
-		if(itemInNextItemSlot != null) {
-			if(itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
-				if(itemInNextItemSlot.getType() != noActionItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
-					if (!pageExists(1)) {
-						createPage(1);
-					}
-					this.items.get(1)[1] = itemInNextItemSlot;
-				}
-			}
-		}
+//		ItemStack itemInPrevItemSlot = this.items.get(0).get(prevPos);
+//		ItemStack itemInNextItemSlot = this.items.get(0).get(nextPos);
+//		if(itemInPrevItemSlot != null) {
+//			if(itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
+//				if(itemInPrevItemSlot.getType() != noActionItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+//					if (!pageExists(1)) {
+//						createPage(1);
+//					}
+//					this.items.get(1).set(0, itemInPrevItemSlot);
+//				}
+//			}
+//		}
+//		if(itemInNextItemSlot != null) {
+//			if(itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
+//				if(itemInNextItemSlot.getType() != noActionItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+//					if (!pageExists(1)) {
+//						createPage(1);
+//					}
+//					this.items.get(1).set(1, itemInNextItemSlot);
+//				}
+//			}
+//		}
 		player.sendMessage("Your max pages are: " + (maxPage + 1));
 	}
 	
@@ -54,9 +57,11 @@ public class CustomInventory {
 	}
 	
 	void saveCurrentPage() {
-		ItemStack[] pageItems = new ItemStack[27];
+		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
 		for(int i=0; i<27; i++) {
-			pageItems[i] = this.player.getInventory().getItem(i+9);
+			if (i != prevPos && i != nextPos) {
+				pageItems.add(this.player.getInventory().getItem(i+9));
+			}
 		}
 		this.items.put(this.page, pageItems);
 	}
@@ -67,21 +72,35 @@ public class CustomInventory {
 	
 	void showPage(Integer page) {
 		this.page = page;
+		if (!pageExists(page)) {
+			createPage(page);
+		}
+		Boolean foundPrev = false;
+		Boolean foundNext = false;
 		for(int i=0; i<27; i++) {
-			if (i == 18) {
+			int j = i;
+			if (i == prevPos) {
 				if(page == 0) {
 					this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
 				} else {
 					this.player.getInventory().setItem(i+9, addPageNums(prevItem));
 				}
-			} else if (i == 26) {
+				foundPrev = true;
+			} else if (i == nextPos) {
 				if(page == maxPage) {
 					this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
 				} else {
 					this.player.getInventory().setItem(i+9, addPageNums(nextItem));
 				}
+				foundNext = true;
 			} else {
-				this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
+				if (foundPrev) {
+					j--;
+				}
+				if (foundNext) {
+					j--;
+				}
+				this.player.getInventory().setItem(i+9, this.items.get(page).get(j));
 			}
 		}
 		player.sendMessage("Showing Page: " + page);
@@ -121,9 +140,9 @@ public class CustomInventory {
 	}
 	
 	void createPage(Integer page) {
-		ItemStack[] pageItems = new ItemStack[27];
-		for(int i=0; i<27; i++) {
-			pageItems[i] = null;
+		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+		for(int i=0; i<25; i++) {
+			pageItems.add(null);
 		}
 		this.items.put(page, pageItems);
 	}
@@ -137,11 +156,11 @@ public class CustomInventory {
 		}
 	}
 	
-	HashMap<Integer, ItemStack[]> getItems() {
+	HashMap<Integer, ArrayList<ItemStack>> getItems() {
 		return this.items;
 	}
 	
-	void setItems(HashMap<Integer, ItemStack[]> items) {
+	void setItems(HashMap<Integer, ArrayList<ItemStack>> items) {
 		this.items = items;
 	}
 	

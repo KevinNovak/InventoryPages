@@ -10,12 +10,14 @@ items:
     prev:
         ID: 160
         variation: 9
+        position: 18
         name: '&6Prev Page'
         lore:
         - '&3Page {CURRENT}/{MAX}'
     next:
         ID: 160
         variation: 9
+        position: 26
         name: '&6Next Page'
         lore:
         - '&3Page {CURRENT}/{MAX}'

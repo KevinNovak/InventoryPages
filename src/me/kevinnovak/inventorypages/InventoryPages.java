@@ -1,6 +1,7 @@
 package me.kevinnovak.inventorypages;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -31,6 +32,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     ColorConverter colorConv = new ColorConverter(this);
 	
 	private ItemStack nextItem, prevItem, noActionItem;
+	private Integer prevPos, nextPos;
 
     // ======================
     // Enable
@@ -89,12 +91,16 @@ public class InventoryPages extends JavaPlugin implements Listener{
         prevItemMeta.setDisplayName(colorConv.convertConfig("items.prev.name"));
         prevItemMeta.setLore(colorConv.convertConfigList("items.prev.lore"));
         prevItem.setItemMeta(prevItemMeta);
+        
+        prevPos = getConfig().getInt("items.prev.position");
     	
         nextItem = new ItemStack(getConfig().getInt("items.next.ID"), 1, (short) getConfig().getInt("items.next.variation"));
         ItemMeta nextItemMeta = nextItem.getItemMeta();
         nextItemMeta.setDisplayName(colorConv.convertConfig("items.next.name"));
         nextItemMeta.setLore(colorConv.convertConfigList("items.next.lore"));
         nextItem.setItemMeta(nextItemMeta);
+        
+        nextPos = getConfig().getInt("items.next.position");
         
         noActionItem = new ItemStack(getConfig().getInt("items.noAction.ID"), 1, (short) getConfig().getInt("items.noAction.variation"));
         ItemMeta noActionItemMeta = noActionItem.getItemMeta();
@@ -112,9 +118,9 @@ public class InventoryPages extends JavaPlugin implements Listener{
 			File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
 			FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 			
-	    	for(Entry<Integer, ItemStack[]> pageItemEntry : playerInvs.get(playerUUID).getItems().entrySet()) {
-	    		for(int i = 0; i < pageItemEntry.getValue().length; i++) {
-	    			playerData.set(playerUUID + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue()[i]));
+	    	for(Entry<Integer, ArrayList<ItemStack>> pageItemEntry : playerInvs.get(playerUUID).getItems().entrySet()) {
+	    		for(int i = 0; i < pageItemEntry.getValue().size(); i++) {
+	    			playerData.set(playerUUID + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
 	    		}
 	    	}
 	    	
@@ -130,16 +136,15 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	// =========================
     // Load Inventory From File Intro HashMap
     // =========================
-	@SuppressWarnings("deprecation")
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
 		String playerUUID = player.getUniqueId().toString();
-    	CustomInventory inventory = new CustomInventory(player, prevItem, nextItem, noActionItem);
+    	CustomInventory inventory = new CustomInventory(player, prevItem, prevPos, nextItem, nextPos, noActionItem);
     
 		File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 		
     	if(playerFile.exists() && playerData.contains(playerUUID)) {
-    		HashMap<Integer, ItemStack[]> pageItemHashMap = new HashMap<Integer, ItemStack[]>();
+    		HashMap<Integer, ArrayList<ItemStack>> pageItemHashMap = new HashMap<Integer, ArrayList<ItemStack>>();
 
         	int pageNum = 0;
         	Boolean pageExists = playerData.contains(playerUUID + "." + pageNum);
@@ -147,13 +152,10 @@ public class InventoryPages extends JavaPlugin implements Listener{
         	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
         	while (pageExists) {
         		Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
-        		ItemStack[] pageItems = new ItemStack[27];
-        		for(int i = 0; i < pageItems.length; i++) {
+        		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+        		for(int i = 0; i < 25; i++) {
         			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString(playerUUID + "." + pageNum + "." + i))[0];
-        			if (item != null) {
-        				Bukkit.getLogger().info("Valid item: " + item.getTypeId());
-        				pageItems[i] = item;
-        			}
+        			pageItems.add(item);
         		}
         		pageItemHashMap.put(pageNum, pageItems);
         		
@@ -264,12 +266,12 @@ public class InventoryPages extends JavaPlugin implements Listener{
 			Player player = (Player) human;
 			String playerUUID = (String) player.getUniqueId().toString();
 			int slot = event.getSlot();
-	    	if (slot == 35) {
-	    		event.setCancelled(true);
-	    		playerInvs.get(playerUUID).nextPage();
-	    	} else if (slot == 27) {
+	    	if (slot == prevPos+9) {
 	    		event.setCancelled(true);
 	    		playerInvs.get(playerUUID).prevPage();
+	    	} else if (slot == nextPos+9) {
+	    		event.setCancelled(true);
+	    		playerInvs.get(playerUUID).nextPage();
 	    	}
 		}
     }
