@@ -62,53 +62,33 @@ public class CustomInventory {
 		for(int i=0; i<27; i++) {
 			if (i == 18) {
 				if(page == 0) {
-					ItemMeta noActionItemMeta = noActionItem.getItemMeta();
-			        List<String> noActionItemLore = noActionItemMeta.getLore();
-			        for (int j = 0; j < noActionItemLore.size(); j++) {
-			        	noActionItemLore.set(j, noActionItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
-			        	player.sendMessage("Page: " + page.toString());
-			        }
-			        noActionItemMeta.setLore(noActionItemLore);
-			        noActionItem.setItemMeta(noActionItemMeta);
-					this.player.getInventory().setItem(i+9, noActionItem);
+					this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
 				} else {
-					ItemMeta prevItemMeta = prevItem.getItemMeta();
-			        List<String> prevItemLore = prevItemMeta.getLore();
-			        for (int j = 0; j < prevItemLore.size(); j++) {
-			        	prevItemLore.set(j, prevItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
-			        	player.sendMessage("Page: " + page.toString());
-			        }
-			        prevItemMeta.setLore(prevItemLore);
-			        prevItem.setItemMeta(prevItemMeta);
-					this.player.getInventory().setItem(i+9, prevItem);
+					this.player.getInventory().setItem(i+9, addPageNums(prevItem));
 				}
 			} else if (i == 26) {
 				if(page == maxPage) {
-					ItemMeta noActionItemMeta = noActionItem.getItemMeta();
-			        List<String> noActionItemLore = noActionItemMeta.getLore();
-			        for (int j = 0; j < noActionItemLore.size(); j++) {
-			        	noActionItemLore.set(j, noActionItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
-			        	player.sendMessage("Page: " + page.toString());
-			        }
-			        noActionItemMeta.setLore(noActionItemLore);
-			        noActionItem.setItemMeta(noActionItemMeta);
-					this.player.getInventory().setItem(i+9, noActionItem);
+					this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
 				} else {
-					ItemMeta nextItemMeta = nextItem.getItemMeta();
-			        List<String> nextItemLore = nextItemMeta.getLore();
-			        for (int j = 0; j < nextItemLore.size(); j++) {
-			        	nextItemLore.set(j, nextItemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
-			        	player.sendMessage("Page: " + page.toString());
-			        }
-			        nextItemMeta.setLore(nextItemLore);
-			        nextItem.setItemMeta(nextItemMeta);
-					this.player.getInventory().setItem(i+9, nextItem);
+					this.player.getInventory().setItem(i+9, addPageNums(nextItem));
 				}
 			} else {
 				this.player.getInventory().setItem(i+9, items.get(this.page)[i]);
 			}
 		}
 		player.sendMessage("Showing Page: " + page);
+	}
+	
+	ItemStack addPageNums(ItemStack item) {
+		ItemStack modItem = new ItemStack(item);
+		ItemMeta itemMeta = modItem.getItemMeta();
+        List<String> itemLore = itemMeta.getLore();
+        for (int j = 0; j < itemLore.size(); j++) {
+        	itemLore.set(j, itemLore.get(j).replace("{CURRENT}", page.toString()).replace("{MAX}", maxPage.toString()));
+        }
+        itemMeta.setLore(itemLore);
+        modItem.setItemMeta(itemMeta);
+		return modItem;
 	}
 	
 	void nextPage() {
