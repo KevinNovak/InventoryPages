@@ -146,7 +146,7 @@ public class MetricsLite {
      * @return True if statistics measuring is running, otherwise false.
      */
     public boolean start() {
-        synchronized (optOutLock) {
+        synchronized(optOutLock) {
             // Did we opt out?
             if (isOptOut()) {
                 return false;
@@ -165,7 +165,7 @@ public class MetricsLite {
                 public void run() {
                     try {
                         // This has to be synchronized or it can collide with the disable method.
-                        synchronized (optOutLock) {
+                        synchronized(optOutLock) {
                             // Disable Task, if it is running and the server owner decided to opt-out
                             if (isOptOut() && task != null) {
                                 task.cancel();
@@ -199,7 +199,7 @@ public class MetricsLite {
      * @return true if metrics should be opted out of it
      */
     public boolean isOptOut() {
-        synchronized (optOutLock) {
+        synchronized(optOutLock) {
             try {
                 // Reload the metrics file
                 configuration.load(getConfigFile());
@@ -225,7 +225,7 @@ public class MetricsLite {
      */
     public void enable() throws IOException {
         // This has to be synchronized or it can collide with the check in the task.
-        synchronized (optOutLock) {
+        synchronized(optOutLock) {
             // Check if the server owner has already set opt-out, if not, set it.
             if (isOptOut()) {
                 configuration.set("opt-out", false);
@@ -246,7 +246,7 @@ public class MetricsLite {
      */
     public void disable() throws IOException {
         // This has to be synchronized or it can collide with the check in the task.
-        synchronized (optOutLock) {
+        synchronized(optOutLock) {
             // Check if the server owner has already set opt-out, if not, set it.
             if (!isOptOut()) {
                 configuration.set("opt-out", true);
@@ -277,7 +277,7 @@ public class MetricsLite {
         // return => base/plugins/PluginMetrics/config.yml
         return new File(new File(pluginsFolder, "PluginMetrics"), "config.yml");
     }
-    
+
     /**
      * Gets the online player (backwards compatibility)
      * 
@@ -286,17 +286,17 @@ public class MetricsLite {
     private int getOnlinePlayers() {
         try {
             Method onlinePlayerMethod = Server.class.getMethod("getOnlinePlayers");
-            if(onlinePlayerMethod.getReturnType().equals(Collection.class)) {
-                return ((Collection<?>)onlinePlayerMethod.invoke(Bukkit.getServer())).size();
+            if (onlinePlayerMethod.getReturnType().equals(Collection.class)) {
+                return ((Collection <? > ) onlinePlayerMethod.invoke(Bukkit.getServer())).size();
             } else {
-                return ((Player[])onlinePlayerMethod.invoke(Bukkit.getServer())).length;
+                return ((Player[]) onlinePlayerMethod.invoke(Bukkit.getServer())).length;
             }
         } catch (Exception ex) {
             if (debug) {
                 Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
             }
         }
-        
+
         return 0;
     }
 
@@ -425,8 +425,7 @@ public class MetricsLite {
         } finally {
             if (gzos != null) try {
                 gzos.close();
-            } catch (IOException ignore) {
-            }
+            } catch (IOException ignore) {}
         }
 
         return baos.toByteArray();
