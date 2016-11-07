@@ -36,9 +36,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
     private ItemStack nextItem, prevItem, noActionItem;
     private Integer prevPos, nextPos;
 
-    // ======================
+    // ======================================
     // Enable
-    // ======================
+    // ======================================
     public void onEnable() {
         saveDefaultConfig();
 
@@ -71,9 +71,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Enabled!");
     }
 
-    // ======================
+    // ======================================
     // Disable
-    // ======================
+    // ======================================
     public void onDisable() {
         for (Player player: Bukkit.getServer().getOnlinePlayers()) {
             // update inventories to hashmap and save to file
@@ -83,11 +83,10 @@ public class InventoryPages extends JavaPlugin implements Listener {
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
     }
 
-    // ======================
+    // ======================================
     // Initialize Next Item
-    // ======================
-    @
-    SuppressWarnings("deprecation")
+    // ======================================
+    @SuppressWarnings("deprecation")
     public void initItems() {
         prevItem = new ItemStack(getConfig().getInt("items.prev.ID"), 1, (short) getConfig().getInt("items.prev.variation"));
         ItemMeta prevItemMeta = prevItem.getItemMeta();
@@ -112,9 +111,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         noActionItem.setItemMeta(noActionItemMeta);
     }
 
-    // =========================
+    // ======================================
     // Save Inventory From HashMap To File
-    // =========================
+    // ======================================
     public void saveInvFromHashMapToFile(Player player) {
         String playerUUID = player.getUniqueId().toString();
         if (playerInvs.containsKey(playerUUID)) {
@@ -135,9 +134,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
     }
 
-    // =========================
+    // ======================================
     // Load Inventory From File Into HashMap
-    // =========================
+    // ======================================
     public void loadInvFromFileIntoHashMap(Player player) throws IOException {
         int maxPage = 1;
         for (int i = 2; i < 101; i++) {
@@ -178,9 +177,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         playerInvs.get(playerUUID).showPage(0);
     }
 
-    // =========================
+    // ======================================
     // Update Inventory To HashMap
-    // =========================
+    // ======================================
     public void updateInvToHashMap(Player player) {
         String playerUUID = player.getUniqueId().toString();
         if (playerInvs.containsKey(playerUUID)) {
@@ -188,9 +187,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
     }
 
-    // =========================
+    // ======================================
     // Remove Inventory From HashMap
-    // =========================
+    // ======================================
     public void removeInvFromHashMap(Player player) {
         String playerUUID = player.getUniqueId().toString();
         if (playerInvs.containsKey(playerUUID)) {
@@ -198,18 +197,18 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
     }
 
-    // =========================
+    // ======================================
     // Login
-    // =========================
+    // ======================================
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) throws InterruptedException, IOException {
         Player player = event.getPlayer();
         loadInvFromFileIntoHashMap(player);
     }
 
-    // =========================
+    // ======================================
     // Logout
-    // =========================
+    // ======================================
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) throws InterruptedException {
         Player player = event.getPlayer();
@@ -218,9 +217,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         removeInvFromHashMap(player);
     }
 
-    // =========================
+    // ======================================
     // Death
-    // =========================
+    // ======================================
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
@@ -243,9 +242,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
     }
 
-    // =========================
+    // ======================================
     // Respawn
-    // =========================
+    // ======================================
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
@@ -258,9 +257,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         playerInvs.get(playerUUID).showPage();
     }
 
-    // =========================
+    // ======================================
     // Inventory Click
-    // =========================
+    // ======================================
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory eventInv = event.getClickedInventory();
@@ -290,9 +289,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
     }
 
-    // =========================
+    // ======================================
     // Inventory Pickup
-    // =========================
+    // ======================================
     @EventHandler
     public void onInventoryPickupItem(InventoryPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
@@ -305,9 +304,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
     }
 
-    // =========================
+    // ======================================
     // Item Drop
-    // =========================
+    // ======================================
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
@@ -320,9 +319,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
     }
 
-    // =========================
+    // ======================================
     // GameMode Change
-    // =========================
+    // ======================================
     @EventHandler
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
