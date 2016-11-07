@@ -162,7 +162,7 @@ public class CustomInventory {
 	}
 	
 	SimpleEntry<Integer, Integer> nextFreeSpace() {
-		for (Integer i=0; i<maxPage; i++) {
+		for (Integer i=0; i<maxPage+1; i++) {
 			for(Integer j=0; j<25; j++) {
 				if(items.get(i).get(j) == null) {
 					SimpleEntry<Integer, Integer> pageAndPos = new AbstractMap.SimpleEntry<Integer, Integer>(i, j);
