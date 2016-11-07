@@ -137,36 +137,47 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // Load Inventory From File Intro HashMap
     // =========================
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
-		String playerUUID = player.getUniqueId().toString();
-    	CustomInventory inventory = new CustomInventory(player, prevItem, prevPos, nextItem, nextPos, noActionItem);
-    
-		File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
-		FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
+    	Boolean foundPerm = false;
+    	int maxPage = 1;
+		for (int i = 2; i < 101; i ++) {
+			if (player.hasPermission("inventorypages.pages." + i)) {
+				maxPage = i - 1;
+				foundPerm = true;
+			}
+		}
 		
-    	if(playerFile.exists() && playerData.contains(playerUUID)) {
-    		HashMap<Integer, ArrayList<ItemStack>> pageItemHashMap = new HashMap<Integer, ArrayList<ItemStack>>();
+		if(foundPerm == true) {
+			String playerUUID = player.getUniqueId().toString();
+	    	CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noActionItem);
+	    
+			File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
+			FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
+			
+	    	if(playerFile.exists() && playerData.contains(playerUUID)) {
+	    		HashMap<Integer, ArrayList<ItemStack>> pageItemHashMap = new HashMap<Integer, ArrayList<ItemStack>>();
 
-        	int pageNum = 0;
-        	Boolean pageExists = playerData.contains(playerUUID + "." + pageNum);
+	        	int pageNum = 0;
+	        	Boolean pageExists = playerData.contains(playerUUID + "." + pageNum);
 
-        	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
-        	while (pageExists) {
-        		Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
-        		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
-        		for(int i = 0; i < 25; i++) {
-        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString(playerUUID + "." + pageNum + "." + i))[0];
-        			pageItems.add(item);
-        		}
-        		pageItemHashMap.put(pageNum, pageItems);
-        		
-        		pageNum++;
-        		pageExists = playerData.contains(playerUUID + "." + pageNum);
-        	}
-        	inventory.setItems(pageItemHashMap);
+	        	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
+	        	while (pageExists) {
+	        		Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
+	        		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+	        		for(int i = 0; i < 25; i++) {
+	        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString(playerUUID + "." + pageNum + "." + i))[0];
+	        			pageItems.add(item);
+	        		}
+	        		pageItemHashMap.put(pageNum, pageItems);
+	        		
+	        		pageNum++;
+	        		pageExists = playerData.contains(playerUUID + "." + pageNum);
+	        	}
+	        	inventory.setItems(pageItemHashMap);
 
-    	}
-    	playerInvs.put(playerUUID, inventory);
-    	playerInvs.get(playerUUID).showPage(0);
+	    	}
+	    	playerInvs.put(playerUUID, inventory);
+	    	playerInvs.get(playerUUID).showPage(0);
+		}
 	}
 	
 	// =========================

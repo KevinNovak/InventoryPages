@@ -16,20 +16,14 @@ public class CustomInventory {
 	private Integer page = 0, maxPage = 1, prevPos, nextPos;
 	private HashMap<Integer, ArrayList<ItemStack>> items = new HashMap<Integer, ArrayList<ItemStack>>();;
 	
-	CustomInventory(Player player, ItemStack prevItem, Integer prevPos, ItemStack nextItem,  Integer nextPos, ItemStack noActionItem) {
+	CustomInventory(Player player, int maxPage, ItemStack prevItem, Integer prevPos, ItemStack nextItem,  Integer nextPos, ItemStack noActionItem) {
 		this.player = player;
+		this.maxPage = maxPage;
 		this.prevItem = prevItem;
 		this.prevPos = prevPos;
 		this.nextItem = nextItem;
 		this.nextPos = nextPos;
 		this.noActionItem = noActionItem;
-		
-		// check for permissions
-		for (int i = 2; i < 101; i ++) {
-			if (player.hasPermission("inventorypages.pages." + i)) {
-				this.maxPage = i - 1;
-			}
-		}
 		
 		// create pages
 		for (int i=0; i<maxPage+1; i++) {
