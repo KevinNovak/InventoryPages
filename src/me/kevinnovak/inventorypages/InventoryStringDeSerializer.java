@@ -16,7 +16,7 @@ public class InventoryStringDeSerializer {
         return toBase64(inventory.getContents());
     }
 
-    public static String toBase64(ItemStack itemstack){
+    public static String toBase64(ItemStack itemstack) {
         ItemStack[] arr = new ItemStack[1];
         arr[0] = itemstack;
         return toBase64(arr);
@@ -29,7 +29,7 @@ public class InventoryStringDeSerializer {
 
             dataOutput.writeInt(contents.length);
 
-            for (ItemStack stack : contents) {
+            for (ItemStack stack: contents) {
                 dataOutput.writeObject(stack);
             }
             dataOutput.close();
@@ -52,7 +52,7 @@ public class InventoryStringDeSerializer {
 
     public static ItemStack[] stacksFromBase64(String data) throws IOException {
         try {
-            if(data == null || Base64Coder.decodeLines(data) == null) return new ItemStack[]{};
+            if (data == null || Base64Coder.decodeLines(data) == null) return new ItemStack[] {};
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
             ItemStack[] stacks = new ItemStack[dataInput.readInt()];
