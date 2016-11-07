@@ -3,17 +3,3 @@ version: 1.0.0
 main: me.kevinnovak.inventorypages.InventoryPages
 author: KevinNovak
 description: Carry as many items as you'd like.
-
-commands:
-    testsave:
-        usage: /<command>
-        description: Test.
-        aliases: [ipsave]
-    testnext:
-        usage: /<command>
-        description: Test.
-        aliases: [ipnext]
-    testprev:
-        usage: /<command>
-        description: Test.
-        aliases: [ipprev]
