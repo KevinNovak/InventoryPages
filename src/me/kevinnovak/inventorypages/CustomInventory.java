@@ -17,6 +17,9 @@ public class CustomInventory {
     private Integer page = 0, maxPage = 1, prevPos, nextPos;
     private HashMap < Integer, ArrayList < ItemStack >> items = new HashMap < Integer, ArrayList < ItemStack >> ();;
 
+    // ======================================
+    // Constructor
+    // ======================================
     CustomInventory(Player player, int maxPage, ItemStack prevItem, Integer prevPos, ItemStack nextItem, Integer nextPos, ItemStack noActionItem) {
         this.player = player;
         this.maxPage = maxPage;
@@ -60,6 +63,9 @@ public class CustomInventory {
         player.sendMessage("Your max pages are: " + (maxPage + 1));
     }
 
+    // ======================================
+    // Save Current Page
+    // ======================================
     void saveCurrentPage() {
         if (player.getGameMode() != GameMode.CREATIVE) {
             ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
@@ -72,6 +78,9 @@ public class CustomInventory {
         }
     }
 
+    // ======================================
+    // Show Page
+    // ======================================
     void showPage() {
         this.showPage(this.page);
     }
@@ -135,6 +144,9 @@ public class CustomInventory {
         player.sendMessage("Showing Page: " + page);
     }
 
+    // ======================================
+    // Add Page Numbers
+    // ======================================
     ItemStack addPageNums(ItemStack item) {
         ItemStack modItem = new ItemStack(item);
         ItemMeta itemMeta = modItem.getItemMeta();
@@ -149,30 +161,9 @@ public class CustomInventory {
         return modItem;
     }
 
-    void nextPage() {
-        if (this.page < maxPage) {
-            this.saveCurrentPage();
-            this.page = this.page + 1;
-            this.showPage();
-            this.saveCurrentPage();
-        }
-    }
-
-    Boolean pageExists(Integer page) {
-        if (items.containsKey(page)) {
-            return true;
-        }
-        return false;
-    }
-
-    void createPage(Integer page) {
-        ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
-        for (int i = 0; i < 25; i++) {
-            pageItems.add(null);
-        }
-        this.items.put(page, pageItems);
-    }
-
+    // ======================================
+    // Previous Page
+    // ======================================
     void prevPage() {
         if (this.page > 0) {
             this.saveCurrentPage();
@@ -182,6 +173,42 @@ public class CustomInventory {
         }
     }
 
+    // ======================================
+    // Next Page
+    // ======================================
+    void nextPage() {
+        if (this.page < maxPage) {
+            this.saveCurrentPage();
+            this.page = this.page + 1;
+            this.showPage();
+            this.saveCurrentPage();
+        }
+    }
+
+    // ======================================
+    // Page Exists
+    // ======================================
+    Boolean pageExists(Integer page) {
+        if (items.containsKey(page)) {
+            return true;
+        }
+        return false;
+    }
+
+    // ======================================
+    // Create Page
+    // ======================================
+    void createPage(Integer page) {
+        ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
+        for (int i = 0; i < 25; i++) {
+            pageItems.add(null);
+        }
+        this.items.put(page, pageItems);
+    }
+
+    // ======================================
+    // Get/Set Items
+    // ======================================
     HashMap < Integer, ArrayList < ItemStack >> getItems() {
         return this.items;
     }
@@ -190,6 +217,9 @@ public class CustomInventory {
         this.items = items;
     }
 
+    // ======================================
+    // Next Free Space
+    // ======================================
     SimpleEntry < Integer, Integer > nextFreeSpace() {
         for (Integer i = 0; i < maxPage + 1; i++) {
             for (Integer j = 0; j < 25; j++) {
