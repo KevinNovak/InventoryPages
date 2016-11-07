@@ -129,14 +129,13 @@ public class InventoryPages extends JavaPlugin implements Listener{
 	    	try {
 				playerData.save(playerFile);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 	
 	// =========================
-    // Load Inventory From File Intro HashMap
+    // Load Inventory From File Into HashMap
     // =========================
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
     	int maxPage = 1;
@@ -185,9 +184,6 @@ public class InventoryPages extends JavaPlugin implements Listener{
 		String playerUUID = player.getUniqueId().toString();
 		if(playerInvs.containsKey(playerUUID)) {
 			playerInvs.get(playerUUID).saveCurrentPage();
-		} else {
-			// TODO player has no inventory in hashmap
-			// create inventory and save to hashmap
 		}
 	}
 	
