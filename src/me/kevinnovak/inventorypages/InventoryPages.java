@@ -135,49 +135,43 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // Load Inventory From File Intro HashMap
     // =========================
 	public void loadInvFromFileIntoHashMap(Player player) throws IOException {
-    	Boolean foundPerm = false;
     	int maxPage = 1;
-    	if (player.hasPermission("inventorypages.use")) {
-			foundPerm = true;
-    		for (int i = 2; i < 101; i ++) {
-    			if (player.hasPermission("inventorypages.pages." + i)) {
-    				maxPage = i - 1;
-    			}
-    		}
-    	}
-    	
-		if(foundPerm == true) {
-			String playerUUID = player.getUniqueId().toString();
-	    	CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noActionItem);
-	    
-			File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
-			FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
-			
-	    	if(playerFile.exists() && playerData.contains(playerUUID)) {
-	    		HashMap<Integer, ArrayList<ItemStack>> pageItemHashMap = new HashMap<Integer, ArrayList<ItemStack>>();
-
-	        	int pageNum = 0;
-	        	Boolean pageExists = playerData.contains(playerUUID + "." + pageNum);
-
-	        	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
-	        	while (pageExists) {
-	        		Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
-	        		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
-	        		for(int i = 0; i < 25; i++) {
-	        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString(playerUUID + "." + pageNum + "." + i))[0];
-	        			pageItems.add(item);
-	        		}
-	        		pageItemHashMap.put(pageNum, pageItems);
-	        		
-	        		pageNum++;
-	        		pageExists = playerData.contains(playerUUID + "." + pageNum);
-	        	}
-	        	inventory.setItems(pageItemHashMap);
-
-	    	}
-	    	playerInvs.put(playerUUID, inventory);
-	    	playerInvs.get(playerUUID).showPage(0);
+		for (int i = 2; i < 101; i ++) {
+			if (player.hasPermission("inventorypages.pages." + i)) {
+				maxPage = i - 1;
+			}
 		}
+    	
+		String playerUUID = player.getUniqueId().toString();
+    	CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noActionItem);
+    
+		File playerFile = new File (getDataFolder() + "/inventories/" + playerUUID + ".yml");
+		FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
+		
+    	if(playerFile.exists() && playerData.contains(playerUUID)) {
+    		HashMap<Integer, ArrayList<ItemStack>> pageItemHashMap = new HashMap<Integer, ArrayList<ItemStack>>();
+
+        	int pageNum = 0;
+        	Boolean pageExists = playerData.contains(playerUUID + "." + pageNum);
+
+        	Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
+        	while (pageExists) {
+        		Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
+        		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+        		for(int i = 0; i < 25; i++) {
+        			ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString(playerUUID + "." + pageNum + "." + i))[0];
+        			pageItems.add(item);
+        		}
+        		pageItemHashMap.put(pageNum, pageItems);
+        		
+        		pageNum++;
+        		pageExists = playerData.contains(playerUUID + "." + pageNum);
+        	}
+        	inventory.setItems(pageItemHashMap);
+
+    	}
+    	playerInvs.put(playerUUID, inventory);
+    	playerInvs.get(playerUUID).showPage(0);
 	}
 	
 	// =========================
@@ -209,9 +203,7 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) throws InterruptedException, IOException {
     	Player player = event.getPlayer();
-    	if (player.hasPermission("inventorypages.use")) {
-    		loadInvFromFileIntoHashMap(player);
-    	}
+		loadInvFromFileIntoHashMap(player);
     }
     
     // =========================
@@ -220,11 +212,9 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) throws InterruptedException {
     	Player player = event.getPlayer();
-    	if (player.hasPermission("inventorypages.use")) {
-	    	updateInvToHashMap(player);
-	    	saveInvFromHashMapToFile(player);
-	    	removeInvFromHashMap(player);
-    	}
+    	updateInvToHashMap(player);
+    	saveInvFromHashMapToFile(player);
+    	removeInvFromHashMap(player);
     }
     
     // =========================
@@ -234,24 +224,22 @@ public class InventoryPages extends JavaPlugin implements Listener{
     public void onDeath(PlayerDeathEvent event) {
     	Player player = event.getEntity();
     	
-    	if (player.hasPermission("inventorypages.use")) {
-	    	//save items before death
-	    	updateInvToHashMap(player);
-	    	
-	    	List<ItemStack> drops = event.getDrops();
-	        event.setKeepLevel(true);
-	        ListIterator<ItemStack> litr = drops.listIterator();
-	        while(litr.hasNext()){
-	        	ItemStack stack = litr.next();
-		        if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
-		            litr.remove();
-		        } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
-		        	litr.remove();
-		        } else if (stack.getType() == noActionItem.getType() && stack.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
-		        	litr.remove();
-		        }
+    	//save items before death
+    	updateInvToHashMap(player);
+    	
+    	List<ItemStack> drops = event.getDrops();
+        event.setKeepLevel(true);
+        ListIterator<ItemStack> litr = drops.listIterator();
+        while(litr.hasNext()){
+        	ItemStack stack = litr.next();
+	        if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
+	            litr.remove();
+	        } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
+	        	litr.remove();
+	        } else if (stack.getType() == noActionItem.getType() && stack.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
+	        	litr.remove();
 	        }
-    	}
+        }
     }
     
     // =========================
@@ -260,15 +248,13 @@ public class InventoryPages extends JavaPlugin implements Listener{
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
     	Player player = event.getPlayer();
-    	if (player.hasPermission("inventorypages.use")) {
-	    	String playerUUID = player.getUniqueId().toString();
-	    	
-	    	// saves empty inventory (other than next and prev)
-	    	// disable this if you want to keep items
-	    	updateInvToHashMap(player);
-	    	
-	    	playerInvs.get(playerUUID).showPage();
-    	}
+    	String playerUUID = player.getUniqueId().toString();
+    	
+    	// saves empty inventory (other than next and prev)
+    	// disable this if you want to keep items
+    	updateInvToHashMap(player);
+    	
+    	playerInvs.get(playerUUID).showPage();
     }
     
     // =========================
@@ -279,16 +265,14 @@ public class InventoryPages extends JavaPlugin implements Listener{
 		HumanEntity human = event.getWhoClicked();
 		if (human instanceof Player) {
 			Player player = (Player) human;
-	    	if (player.hasPermission("inventorypages.use")) {
-				String playerUUID = (String) player.getUniqueId().toString();
-				int slot = event.getSlot();
-		    	if (slot == prevPos+9) {
-		    		event.setCancelled(true);
-		    		playerInvs.get(playerUUID).prevPage();
-		    	} else if (slot == nextPos+9) {
-		    		event.setCancelled(true);
-		    		playerInvs.get(playerUUID).nextPage();
-		    	}
+			String playerUUID = (String) player.getUniqueId().toString();
+			int slot = event.getSlot();
+	    	if (slot == prevPos+9) {
+	    		event.setCancelled(true);
+	    		playerInvs.get(playerUUID).prevPage();
+	    	} else if (slot == nextPos+9) {
+	    		event.setCancelled(true);
+	    		playerInvs.get(playerUUID).nextPage();
 	    	}
 		}
     }
