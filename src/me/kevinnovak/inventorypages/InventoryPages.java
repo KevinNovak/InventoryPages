@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -264,20 +265,23 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-		HumanEntity human = event.getWhoClicked();
-		if (human instanceof Player) {
-			Player player = (Player) human;
-			GameMode gm = player.getGameMode();
-			if(gm != GameMode.CREATIVE) {
-				String playerUUID = (String) player.getUniqueId().toString();
-				int slot = event.getSlot();
-		    	if (slot == prevPos+9) {
-		    		event.setCancelled(true);
-		    		playerInvs.get(playerUUID).prevPage();
-		    	} else if (slot == nextPos+9) {
-		    		event.setCancelled(true);
-		    		playerInvs.get(playerUUID).nextPage();
-		    	}
+		if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
+	    	HumanEntity human = event.getWhoClicked();
+			if (human instanceof Player) {
+				Player player = (Player) human;
+				GameMode gm = player.getGameMode();
+				if(gm != GameMode.CREATIVE) {
+					String playerUUID = (String) player.getUniqueId().toString();
+					int slot = event.getSlot();
+					player.sendMessage("Clicked Slot: " + slot);
+			    	if (slot == prevPos+9) {
+			    		event.setCancelled(true);
+			    		playerInvs.get(playerUUID).prevPage();
+			    	} else if (slot == nextPos+9) {
+			    		event.setCancelled(true);
+			    		playerInvs.get(playerUUID).nextPage();
+			    	}
+				}
 			}
 		}
     }
