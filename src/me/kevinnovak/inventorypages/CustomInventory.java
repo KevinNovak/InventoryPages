@@ -61,13 +61,15 @@ public class CustomInventory {
 	}
 	
 	void saveCurrentPage() {
-		ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
-		for(int i=0; i<27; i++) {
-			if (i != prevPos && i != nextPos) {
-				pageItems.add(this.player.getInventory().getItem(i+9));
+		if(player.getGameMode() != GameMode.CREATIVE) {
+			ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+			for(int i=0; i<27; i++) {
+				if (i != prevPos && i != nextPos) {
+					pageItems.add(this.player.getInventory().getItem(i+9));
+				}
 			}
+			this.items.put(this.page, pageItems);
 		}
-		this.items.put(this.page, pageItems);
 	}
 	
 	void showPage() {
