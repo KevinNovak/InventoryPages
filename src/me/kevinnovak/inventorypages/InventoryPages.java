@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -265,27 +266,30 @@ public class InventoryPages extends JavaPlugin implements Listener{
     // =========================
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-    	InventoryType eventInvType = event.getClickedInventory().getType();
-    	if (eventInvType != null) {
-    		if (eventInvType == InventoryType.PLAYER) {
-    	    	HumanEntity human = event.getWhoClicked();
-    			if (human instanceof Player) {
-    				Player player = (Player) human;
-    				GameMode gm = player.getGameMode();
-    				if(gm != GameMode.CREATIVE) {
-    					String playerUUID = (String) player.getUniqueId().toString();
-    					int slot = event.getSlot();
-    					player.sendMessage("Clicked Slot: " + slot);
-    			    	if (slot == prevPos+9) {
-    			    		event.setCancelled(true);
-    			    		playerInvs.get(playerUUID).prevPage();
-    			    	} else if (slot == nextPos+9) {
-    			    		event.setCancelled(true);
-    			    		playerInvs.get(playerUUID).nextPage();
-    			    	}
-    				}
-    			}
-    		}
+    	Inventory eventInv = event.getClickedInventory();
+    	if (eventInv != null) {
+        	InventoryType eventInvType = event.getClickedInventory().getType();
+        	if (eventInvType != null) {
+        		if (eventInvType == InventoryType.PLAYER) {
+        	    	HumanEntity human = event.getWhoClicked();
+        			if (human instanceof Player) {
+        				Player player = (Player) human;
+        				GameMode gm = player.getGameMode();
+        				if(gm != GameMode.CREATIVE) {
+        					String playerUUID = (String) player.getUniqueId().toString();
+        					int slot = event.getSlot();
+        					player.sendMessage("Clicked Slot: " + slot);
+        			    	if (slot == prevPos+9) {
+        			    		event.setCancelled(true);
+        			    		playerInvs.get(playerUUID).prevPage();
+        			    	} else if (slot == nextPos+9) {
+        			    		event.setCancelled(true);
+        			    		playerInvs.get(playerUUID).nextPage();
+        			    	}
+        				}
+        			}
+        		}
+        	}
     	}
     }
     
