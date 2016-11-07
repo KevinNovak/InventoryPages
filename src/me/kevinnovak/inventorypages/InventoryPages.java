@@ -8,6 +8,7 @@ import java.util.ListIterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -18,6 +19,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -265,15 +267,18 @@ public class InventoryPages extends JavaPlugin implements Listener{
 		HumanEntity human = event.getWhoClicked();
 		if (human instanceof Player) {
 			Player player = (Player) human;
-			String playerUUID = (String) player.getUniqueId().toString();
-			int slot = event.getSlot();
-	    	if (slot == prevPos+9) {
-	    		event.setCancelled(true);
-	    		playerInvs.get(playerUUID).prevPage();
-	    	} else if (slot == nextPos+9) {
-	    		event.setCancelled(true);
-	    		playerInvs.get(playerUUID).nextPage();
-	    	}
+			GameMode gm = player.getGameMode();
+			if(gm != GameMode.CREATIVE) {
+				String playerUUID = (String) player.getUniqueId().toString();
+				int slot = event.getSlot();
+		    	if (slot == prevPos+9) {
+		    		event.setCancelled(true);
+		    		playerInvs.get(playerUUID).prevPage();
+		    	} else if (slot == nextPos+9) {
+		    		event.setCancelled(true);
+		    		playerInvs.get(playerUUID).nextPage();
+		    	}
+			}
 		}
     }
     
@@ -305,5 +310,16 @@ public class InventoryPages extends JavaPlugin implements Listener{
         } else if (item.getType() == noActionItem.getType() && item.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
         	event.setCancelled(true);
         }
+    }
+    
+    // =========================
+    // GameMode Change
+    // =========================
+    @EventHandler
+    public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
+    	Player player = event.getPlayer();
+        String playerUUID = player.getUniqueId().toString();
+        playerInvs.get(playerUUID).saveCurrentPage();
+    	playerInvs.get(playerUUID).showPage(event.getNewGameMode());
     }
 }

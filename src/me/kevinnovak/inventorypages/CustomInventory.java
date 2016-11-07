@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -74,23 +75,49 @@ public class CustomInventory {
 	}
 	
 	void showPage(Integer page) {
+		showPage(page, GameMode.SURVIVAL);
+	}
+	
+	void showPage(GameMode gm) {
+		showPage(this.page, gm);
+	}
+	
+	void showPage(Integer page, GameMode gm) {
 		this.page = page;
+		player.sendMessage("GameMode: " + gm);
+		player.sendMessage("Creative: " + GameMode.CREATIVE);
 		Boolean foundPrev = false;
 		Boolean foundNext = false;
 		for(int i=0; i<27; i++) {
 			int j = i;
 			if (i == prevPos) {
 				if(page == 0) {
-					this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
+					if (gm != GameMode.CREATIVE) {
+						this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
+					} else {
+						this.player.getInventory().setItem(i+9, null);
+					}
 				} else {
-					this.player.getInventory().setItem(i+9, addPageNums(prevItem));
+					if (gm != GameMode.CREATIVE) {
+						this.player.getInventory().setItem(i+9, addPageNums(prevItem));
+					} else {
+						this.player.getInventory().setItem(i+9, null);
+					}
 				}
 				foundPrev = true;
 			} else if (i == nextPos) {
 				if(page == maxPage) {
-					this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
+					if (gm != GameMode.CREATIVE) {
+						this.player.getInventory().setItem(i+9, addPageNums(noActionItem));
+					} else {
+						this.player.getInventory().setItem(i+9, null);
+					}
 				} else {
-					this.player.getInventory().setItem(i+9, addPageNums(nextItem));
+					if (gm != GameMode.CREATIVE) {
+						this.player.getInventory().setItem(i+9, addPageNums(nextItem));
+					} else {
+						this.player.getInventory().setItem(i+9, null);
+					}
 				}
 				foundNext = true;
 			} else {
