@@ -96,7 +96,6 @@ public class CustomInventory {
     void showPage(Integer page, GameMode gm) {
         this.page = page;
         player.sendMessage("GameMode: " + gm);
-        player.sendMessage("Creative: " + GameMode.CREATIVE);
         Boolean foundPrev = false;
         Boolean foundNext = false;
         for (int i = 0; i < 27; i++) {
