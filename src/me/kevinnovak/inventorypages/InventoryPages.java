@@ -117,7 +117,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void saveInvFromHashMapToFile(Player player) {
         String playerUUID = player.getUniqueId().toString();
         if (playerInvs.containsKey(playerUUID)) {
-            File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID + ".yml");
+            File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1)  + "/" + playerUUID + ".yml");
             FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
             for (Entry < Integer, ArrayList < ItemStack >> pageItemEntry: playerInvs.get(playerUUID).getItems().entrySet()) {
@@ -148,7 +148,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
         String playerUUID = player.getUniqueId().toString();
         CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noActionItem);
 
-        File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID + ".yml");
+        File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1)  + "/" + playerUUID + ".yml");
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
         if (playerFile.exists() && playerData.contains(playerUUID)) {
