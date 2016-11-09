@@ -16,6 +16,7 @@ public class CustomInventory {
     private ItemStack prevItem, nextItem, noActionItem;
     private Integer page = 0, maxPage = 1, prevPos, nextPos;
     private HashMap < Integer, ArrayList < ItemStack >> items = new HashMap < Integer, ArrayList < ItemStack >> ();;
+    private ArrayList< ItemStack > creativeInv = new ArrayList< ItemStack > (27);
 
     // ======================================
     // Constructor
@@ -35,27 +36,34 @@ public class CustomInventory {
                 createPage(i);
             }
         }
+        
+        // init creative inventory
+        for (int i = 0; i < 27; i++) {
+        	creativeInv.add(null);
+        }
 
         saveCurrentPage();
-
-        // check for items in essential slots
-        ItemStack itemInPrevItemSlot = this.player.getInventory().getItem(prevPos + 9);
-        ItemStack itemInNextItemSlot = this.player.getInventory().getItem(nextPos + 9);
-        if (itemInPrevItemSlot != null) {
-            if (itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
-                if (itemInPrevItemSlot.getType() != noActionItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
-                    SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
-                    this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInPrevItemSlot);
-                    this.player.getInventory().setItem(prevPos, null);
+        
+        if(player.getGameMode() != GameMode.CREATIVE) {
+            // check for items in essential slots
+            ItemStack itemInPrevItemSlot = this.player.getInventory().getItem(prevPos + 9);
+            ItemStack itemInNextItemSlot = this.player.getInventory().getItem(nextPos + 9);
+            if (itemInPrevItemSlot != null) {
+                if (itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
+                    if (itemInPrevItemSlot.getType() != noActionItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+                        SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
+                        this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInPrevItemSlot);
+                        this.player.getInventory().setItem(prevPos, null);
+                    }
                 }
             }
-        }
-        if (itemInNextItemSlot != null) {
-            if (itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
-                if (itemInNextItemSlot.getType() != noActionItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
-                    SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
-                    this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInNextItemSlot);
-                    this.player.getInventory().setItem(nextPos, null);
+            if (itemInNextItemSlot != null) {
+                if (itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
+                    if (itemInNextItemSlot.getType() != noActionItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noActionItem.getItemMeta().getDisplayName()) {
+                        SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
+                        this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInNextItemSlot);
+                        this.player.getInventory().setItem(nextPos, null);
+                    }
                 }
             }
         }
@@ -75,6 +83,10 @@ public class CustomInventory {
                 }
             }
             this.items.put(this.page, pageItems);
+        } else {
+            for (int i = 0; i < 27; i++) {
+            	creativeInv.set(i, this.player.getInventory().getItem(i + 9));
+            }
         }
     }
 
@@ -96,51 +108,41 @@ public class CustomInventory {
     void showPage(Integer page, GameMode gm) {
         this.page = page;
         player.sendMessage("GameMode: " + gm);
-        Boolean foundPrev = false;
-        Boolean foundNext = false;
-        for (int i = 0; i < 27; i++) {
-            int j = i;
-            if (i == prevPos) {
-                if (page == 0) {
-                    if (gm != GameMode.CREATIVE) {
+        if(gm != GameMode.CREATIVE) {
+            Boolean foundPrev = false;
+            Boolean foundNext = false;
+            for (int i = 0; i < 27; i++) {
+                int j = i;
+                if (i == prevPos) {
+                    if (page == 0) {
+                    	this.player.getInventory().setItem(i + 9, addPageNums(noActionItem));
+                    } else {
+                    	this.player.getInventory().setItem(i + 9, addPageNums(prevItem));
+                    }
+                    foundPrev = true;
+                } else if (i == nextPos) {
+                    if (page == maxPage) {
                         this.player.getInventory().setItem(i + 9, addPageNums(noActionItem));
                     } else {
-                        this.player.getInventory().setItem(i + 9, null);
+                    	this.player.getInventory().setItem(i + 9, addPageNums(nextItem));
                     }
+                    foundNext = true;
                 } else {
-                    if (gm != GameMode.CREATIVE) {
-                        this.player.getInventory().setItem(i + 9, addPageNums(prevItem));
-                    } else {
-                        this.player.getInventory().setItem(i + 9, null);
+                    if (foundPrev) {
+                        j--;
                     }
-                }
-                foundPrev = true;
-            } else if (i == nextPos) {
-                if (page == maxPage) {
-                    if (gm != GameMode.CREATIVE) {
-                        this.player.getInventory().setItem(i + 9, addPageNums(noActionItem));
-                    } else {
-                        this.player.getInventory().setItem(i + 9, null);
+                    if (foundNext) {
+                        j--;
                     }
-                } else {
-                    if (gm != GameMode.CREATIVE) {
-                        this.player.getInventory().setItem(i + 9, addPageNums(nextItem));
-                    } else {
-                        this.player.getInventory().setItem(i + 9, null);
-                    }
+                    this.player.getInventory().setItem(i + 9, this.items.get(page).get(j));
                 }
-                foundNext = true;
-            } else {
-                if (foundPrev) {
-                    j--;
-                }
-                if (foundNext) {
-                    j--;
-                }
-                this.player.getInventory().setItem(i + 9, this.items.get(page).get(j));
             }
+            player.sendMessage("Showing Page: " + page);
+        } else {
+        	for (int i = 0; i < 27; i++) {
+        		this.player.getInventory().setItem(i+9, this.creativeInv.get(i));
+        	}
         }
-        player.sendMessage("Showing Page: " + page);
     }
 
     // ======================================
