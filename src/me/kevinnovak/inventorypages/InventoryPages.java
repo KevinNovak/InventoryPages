@@ -122,7 +122,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
             for (Entry < Integer, ArrayList < ItemStack >> pageItemEntry: playerInvs.get(playerUUID).getItems().entrySet()) {
                 for (int i = 0; i < pageItemEntry.getValue().size(); i++) {
-                    playerData.set(playerUUID + "." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
+                    playerData.set("items.main." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
                 }
             }
 
@@ -151,24 +151,24 @@ public class InventoryPages extends JavaPlugin implements Listener {
         File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1)  + "/" + playerUUID + ".yml");
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
-        if (playerFile.exists() && playerData.contains(playerUUID)) {
+        if (playerFile.exists()) {
             HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
 
             int pageNum = 0;
-            Boolean pageExists = playerData.contains(playerUUID + "." + pageNum);
+            Boolean pageExists = playerData.contains("items.main." + pageNum);
 
             Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
             while (pageExists) {
                 Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
                 ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
                 for (int i = 0; i < 25; i++) {
-                    ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString(playerUUID + "." + pageNum + "." + i))[0];
+                    ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.main." + pageNum + "." + i))[0];
                     pageItems.add(item);
                 }
                 pageItemHashMap.put(pageNum, pageItems);
 
                 pageNum++;
-                pageExists = playerData.contains(playerUUID + "." + pageNum);
+                pageExists = playerData.contains("items.main." + pageNum);
             }
             inventory.setItems(pageItemHashMap);
 
