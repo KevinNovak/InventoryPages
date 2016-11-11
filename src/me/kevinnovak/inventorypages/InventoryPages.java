@@ -120,12 +120,18 @@ public class InventoryPages extends JavaPlugin implements Listener {
             File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1)  + "/" + playerUUID + ".yml");
             FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
+            // save survival items
             for (Entry < Integer, ArrayList < ItemStack >> pageItemEntry: playerInvs.get(playerUUID).getItems().entrySet()) {
                 for (int i = 0; i < pageItemEntry.getValue().size(); i++) {
                     playerData.set("items.main." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
                 }
             }
 
+            // save creative items
+            for (int i = 0; i < playerInvs.get(playerUUID).getCreativeItems().size(); i++) {
+            	playerData.set("items.creative." + i, InventoryStringDeSerializer.toBase64(playerInvs.get(playerUUID).getCreativeItems().get(i)));
+            }
+            
             try {
                 playerData.save(playerFile);
             } catch (IOException e) {

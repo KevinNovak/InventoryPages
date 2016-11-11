@@ -16,7 +16,7 @@ public class CustomInventory {
     private ItemStack prevItem, nextItem, noActionItem;
     private Integer page = 0, maxPage = 1, prevPos, nextPos;
     private HashMap < Integer, ArrayList < ItemStack >> items = new HashMap < Integer, ArrayList < ItemStack >> ();;
-    private ArrayList< ItemStack > creativeInv = new ArrayList< ItemStack > (27);
+    private ArrayList< ItemStack > creativeItems = new ArrayList< ItemStack > (27);
 
     // ======================================
     // Constructor
@@ -39,7 +39,7 @@ public class CustomInventory {
         
         // init creative inventory
         for (int i = 0; i < 27; i++) {
-        	creativeInv.add(null);
+        	creativeItems.add(null);
         }
 
         saveCurrentPage();
@@ -85,7 +85,7 @@ public class CustomInventory {
             this.items.put(this.page, pageItems);
         } else {
             for (int i = 0; i < 27; i++) {
-            	creativeInv.set(i, this.player.getInventory().getItem(i + 9));
+            	creativeItems.set(i, this.player.getInventory().getItem(i + 9));
             }
         }
     }
@@ -140,7 +140,7 @@ public class CustomInventory {
             player.sendMessage("Showing Page: " + page);
         } else {
         	for (int i = 0; i < 27; i++) {
-        		this.player.getInventory().setItem(i+9, this.creativeInv.get(i));
+        		this.player.getInventory().setItem(i+9, this.creativeItems.get(i));
         	}
         }
     }
@@ -216,6 +216,17 @@ public class CustomInventory {
 
     void setItems(HashMap < Integer, ArrayList < ItemStack >> items) {
         this.items = items;
+    }
+    
+    // ======================================
+    // Get/Set Creative Items
+    // ======================================
+    ArrayList<ItemStack> getCreativeItems() {
+        return this.creativeItems;
+    }
+
+    void setCreativeItems(ArrayList<ItemStack> creativeItems) {
+        this.creativeItems = creativeItems;
     }
 
     // ======================================
