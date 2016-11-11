@@ -158,6 +158,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
         if (playerFile.exists()) {
+        	// load survival items
             HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
 
             int pageNum = 0;
@@ -177,6 +178,16 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 pageExists = playerData.contains("items.main." + pageNum);
             }
             inventory.setItems(pageItemHashMap);
+            
+            // load creative items
+            if (playerData.contains("items.creative")) {
+                ArrayList< ItemStack > creativeItems = new ArrayList< ItemStack > (27);
+            	for (int i = 0; i < 27; i++) {
+            		ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.creative." + i))[0];
+            		creativeItems.add(item);
+            	}
+            	inventory.setCreativeItems(creativeItems);
+            }
 
         }
         playerInvs.put(playerUUID, inventory);
