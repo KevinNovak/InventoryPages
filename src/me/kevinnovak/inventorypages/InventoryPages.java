@@ -129,7 +129,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
             // save creative items
             for (int i = 0; i < playerInvs.get(playerUUID).getCreativeItems().size(); i++) {
-            	playerData.set("items.creative." + i, InventoryStringDeSerializer.toBase64(playerInvs.get(playerUUID).getCreativeItems().get(i)));
+            	playerData.set("items.creative.0." + i, InventoryStringDeSerializer.toBase64(playerInvs.get(playerUUID).getCreativeItems().get(i)));
             }
             
             try {
@@ -180,10 +180,10 @@ public class InventoryPages extends JavaPlugin implements Listener {
             inventory.setItems(pageItemHashMap);
             
             // load creative items
-            if (playerData.contains("items.creative")) {
+            if (playerData.contains("items.creative.0")) {
                 ArrayList< ItemStack > creativeItems = new ArrayList< ItemStack > (27);
             	for (int i = 0; i < 27; i++) {
-            		ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.creative." + i))[0];
+            		ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.creative.0." + i))[0];
             		creativeItems.add(item);
             	}
             	inventory.setCreativeItems(creativeItems);
