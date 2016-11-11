@@ -174,7 +174,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         }
         playerInvs.put(playerUUID, inventory);
-        playerInvs.get(playerUUID).showPage(0);
+        playerInvs.get(playerUUID).showPage(0, player.getGameMode());
     }
 
     // ======================================
@@ -249,12 +249,13 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         String playerUUID = player.getUniqueId().toString();
+        GameMode gm = player.getGameMode();
 
         // saves empty inventory (other than next and prev)
         // disable this if you want to keep items
         updateInvToHashMap(player);
 
-        playerInvs.get(playerUUID).showPage();
+        playerInvs.get(playerUUID).showPage(gm);
     }
 
     // ======================================
