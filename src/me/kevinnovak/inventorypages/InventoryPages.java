@@ -128,8 +128,10 @@ public class InventoryPages extends JavaPlugin implements Listener {
             }
 
             // save creative items
-            for (int i = 0; i < playerInvs.get(playerUUID).getCreativeItems().size(); i++) {
-            	playerData.set("items.creative.0." + i, InventoryStringDeSerializer.toBase64(playerInvs.get(playerUUID).getCreativeItems().get(i)));
+            if (playerInvs.get(playerUUID).hasUsedCreative()) {
+                for (int i = 0; i < playerInvs.get(playerUUID).getCreativeItems().size(); i++) {
+                	playerData.set("items.creative.0." + i, InventoryStringDeSerializer.toBase64(playerInvs.get(playerUUID).getCreativeItems().get(i)));
+                }
             }
             
             try {

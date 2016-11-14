@@ -15,6 +15,7 @@ public class CustomInventory {
     private Player player;
     private ItemStack prevItem, nextItem, noActionItem;
     private Integer page = 0, maxPage = 1, prevPos, nextPos;
+    private Boolean hasUsedCreative = false;
     private HashMap < Integer, ArrayList < ItemStack >> items = new HashMap < Integer, ArrayList < ItemStack >> ();;
     private ArrayList< ItemStack > creativeItems = new ArrayList< ItemStack > (27);
 
@@ -139,6 +140,7 @@ public class CustomInventory {
             }
             player.sendMessage("Showing Page: " + page);
         } else {
+        	this.hasUsedCreative = true;
         	for (int i = 0; i < 27; i++) {
         		this.player.getInventory().setItem(i+9, this.creativeItems.get(i));
         	}
@@ -227,6 +229,17 @@ public class CustomInventory {
 
     void setCreativeItems(ArrayList<ItemStack> creativeItems) {
         this.creativeItems = creativeItems;
+    }
+    
+    // ======================================
+    // Get/Set Has Used Creative Boolean
+    // ======================================
+    Boolean hasUsedCreative() {
+        return this.hasUsedCreative;
+    }
+
+    void setUsedCreative(Boolean hasUsedCreative) {
+        this.hasUsedCreative = hasUsedCreative;
     }
 
     // ======================================
