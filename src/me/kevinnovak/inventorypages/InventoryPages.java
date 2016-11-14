@@ -17,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -320,32 +319,21 @@ public class InventoryPages extends JavaPlugin implements Listener {
     }
 
     // ======================================
-    // Inventory Pickup
-    // ======================================
-    @EventHandler
-    public void onInventoryPickupItem(InventoryPickupItemEvent event) {
-        ItemStack item = event.getItem().getItemStack();
-        if (item.getType() == prevItem.getType() && item.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
-            event.setCancelled(true);
-        } else if (item.getType() == nextItem.getType() && item.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
-            event.setCancelled(true);
-        } else if (item.getType() == noActionItem.getType() && item.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
-            event.setCancelled(true);
-        }
-    }
-
-    // ======================================
     // Item Drop
     // ======================================
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
+    	event.getPlayer().sendMessage("EVENT: Item drop: fired");
         ItemStack item = event.getItemDrop().getItemStack();
         if (item.getType() == prevItem.getType() && item.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
-            event.setCancelled(true);
+        	event.getPlayer().sendMessage("EVENT: Item drop: prev");
+        	event.setCancelled(true);
         } else if (item.getType() == nextItem.getType() && item.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
-            event.setCancelled(true);
+        	event.getPlayer().sendMessage("EVENT: Item drop: next");
+        	event.setCancelled(true);
         } else if (item.getType() == noActionItem.getType() && item.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
-            event.setCancelled(true);
+        	event.getPlayer().sendMessage("EVENT: Item drop: noAction");
+        	event.setCancelled(true);
         }
     }
 
