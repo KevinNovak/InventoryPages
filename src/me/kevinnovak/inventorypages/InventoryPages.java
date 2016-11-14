@@ -319,25 +319,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
     }
 
     // ======================================
-    // Item Drop
-    // ======================================
-    @EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent event) {
-    	event.getPlayer().sendMessage("EVENT: Item drop: fired");
-        ItemStack item = event.getItemDrop().getItemStack();
-        if (item.getType() == prevItem.getType() && item.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
-        	event.getPlayer().sendMessage("EVENT: Item drop: prev");
-        	event.setCancelled(true);
-        } else if (item.getType() == nextItem.getType() && item.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
-        	event.getPlayer().sendMessage("EVENT: Item drop: next");
-        	event.setCancelled(true);
-        } else if (item.getType() == noActionItem.getType() && item.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
-        	event.getPlayer().sendMessage("EVENT: Item drop: noAction");
-        	event.setCancelled(true);
-        }
-    }
-
-    // ======================================
     // GameMode Change
     // ======================================
     @EventHandler
