@@ -123,7 +123,11 @@ public class InventoryPages extends JavaPlugin implements Listener {
             // save survival items
             for (Entry < Integer, ArrayList < ItemStack >> pageItemEntry: playerInvs.get(playerUUID).getItems().entrySet()) {
                 for (int i = 0; i < pageItemEntry.getValue().size(); i++) {
-                    playerData.set("items.main." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
+                	if (pageItemEntry.getValue().get(i) != null) {
+                		playerData.set("items.main." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
+                	} else {
+                		playerData.set("items.main." + pageItemEntry.getKey() + "." + i, null);
+                	}
                 }
             }
 
@@ -163,22 +167,21 @@ public class InventoryPages extends JavaPlugin implements Listener {
         	// load survival items
             HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
 
-            int pageNum = 0;
-            Boolean pageExists = playerData.contains("items.main." + pageNum);
-
-            Bukkit.getLogger().info("Starting Loop + Page Exists: " + pageExists);
-            while (pageExists) {
-                Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + pageNum);
-                ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
-                for (int i = 0; i < 25; i++) {
-                    ItemStack item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.main." + pageNum + "." + i))[0];
-                    pageItems.add(item);
-                }
-                pageItemHashMap.put(pageNum, pageItems);
-
-                pageNum++;
-                pageExists = playerData.contains("items.main." + pageNum);
+            for (int i=0; i<maxPage+1; i++) {
+	            Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + i);
+	            ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
+	            for (int j = 0; j < 25; j++) {
+	            	ItemStack item = null;
+	            	if (playerData.contains("items.main." + i + "." + j)) {
+	                	if (playerData.getString("items.main." + i + "." + j) != null) {
+	                		item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.main." + i + "." + j))[0];
+	                	}
+	            	}
+	                pageItems.add(item);
+	            }
+	            pageItemHashMap.put(i, pageItems);
             }
+
             inventory.setItems(pageItemHashMap);
             
             // load creative items
