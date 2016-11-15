@@ -79,6 +79,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 // update inventories to hashmap and save to file
                 updateInvToHashMap(player);
                 saveInvFromHashMapToFile(player);
+                removeSwitcherItems(player);
             }
         }
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
@@ -238,6 +239,25 @@ public class InventoryPages extends JavaPlugin implements Listener {
             playerInvs.remove(playerUUID);
         }
     }
+    
+    // ======================================
+    // Remove Switcher Items
+    // ======================================
+    public void removeSwitcherItems(Player player) {
+    	ItemStack[] items = player.getInventory().getContents();
+    	for(int i=0; i<items.length; i++) {
+    		if(items[i] != null) {
+        		ItemStack item = items[i];
+                if (item.getType() == prevItem.getType() && item.getItemMeta().getDisplayName().equals(prevItem.getItemMeta().getDisplayName())) {
+                	player.getInventory().setItem(i, null);
+                } else if (item.getType() == nextItem.getType() && item.getItemMeta().getDisplayName().equals(nextItem.getItemMeta().getDisplayName())) {
+                	player.getInventory().setItem(i, null);
+                } else if (item.getType() == noPageItem.getType() && item.getItemMeta().getDisplayName().equals(noPageItem.getItemMeta().getDisplayName())) {
+                	player.getInventory().setItem(i, null);
+                }
+    		}
+    	}
+    }
 
     // ======================================
     // Login
@@ -259,6 +279,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             updateInvToHashMap(player);
             saveInvFromHashMapToFile(player);
             removeInvFromHashMap(player);
+            removeSwitcherItems(player);
         }
     }
 
@@ -278,11 +299,11 @@ public class InventoryPages extends JavaPlugin implements Listener {
             ListIterator < ItemStack > litr = drops.listIterator();
             while (litr.hasNext()) {
                 ItemStack stack = litr.next();
-                if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
+                if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName().equals(prevItem.getItemMeta().getDisplayName())) {
                     litr.remove();
-                } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
+                } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName().equals(nextItem.getItemMeta().getDisplayName())) {
                     litr.remove();
-                } else if (stack.getType() == noPageItem.getType() && stack.getItemMeta().getDisplayName() == noPageItem.getItemMeta().getDisplayName()) {
+                } else if (stack.getType() == noPageItem.getType() && stack.getItemMeta().getDisplayName().equals(noPageItem.getItemMeta().getDisplayName())) {
                     litr.remove();
                 }
             }
