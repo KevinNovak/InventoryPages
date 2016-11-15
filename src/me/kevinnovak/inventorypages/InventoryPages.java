@@ -31,7 +31,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     private HashMap < String, CustomInventory > playerInvs = new HashMap < String, CustomInventory > ();
     ColorConverter colorConv = new ColorConverter(this);
 
-    private ItemStack nextItem, prevItem, noActionItem;
+    private ItemStack nextItem, prevItem, noPageItem;
     private Integer prevPos, nextPos;
 
     // ======================================
@@ -102,11 +102,11 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         nextPos = getConfig().getInt("items.next.position");
 
-        noActionItem = new ItemStack(getConfig().getInt("items.noAction.ID"), 1, (short) getConfig().getInt("items.noAction.variation"));
-        ItemMeta noActionItemMeta = noActionItem.getItemMeta();
-        noActionItemMeta.setDisplayName(colorConv.convertConfig("items.noAction.name"));
-        noActionItemMeta.setLore(colorConv.convertConfigList("items.noAction.lore"));
-        noActionItem.setItemMeta(noActionItemMeta);
+        noPageItem = new ItemStack(getConfig().getInt("items.noPage.ID"), 1, (short) getConfig().getInt("items.noPage.variation"));
+        ItemMeta noPageItemMeta = noPageItem.getItemMeta();
+        noPageItemMeta.setDisplayName(colorConv.convertConfig("items.noPage.name"));
+        noPageItemMeta.setLore(colorConv.convertConfigList("items.noPage.lore"));
+        noPageItem.setItemMeta(noPageItemMeta);
     }
 
     // ======================================
@@ -140,6 +140,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 }
             }
             
+            // save current page
+            playerData.set("page", playerInvs.get(playerUUID).getPage());
+            
             try {
                 playerData.save(playerFile);
             } catch (IOException e) {
@@ -160,7 +163,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
 
         String playerUUID = player.getUniqueId().toString();
-        CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noActionItem);
+        CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
 
         File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1)  + "/" + playerUUID + ".yml");
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
@@ -198,10 +201,15 @@ public class InventoryPages extends JavaPlugin implements Listener {
             	}
             	inventory.setCreativeItems(creativeItems);
             }
+            
+            // load page
+            if (playerData.contains("page")) {
+            	inventory.setPage(playerData.getInt("page"));
+            }
 
         }
         playerInvs.put(playerUUID, inventory);
-        playerInvs.get(playerUUID).showPage(0, player.getGameMode());
+        playerInvs.get(playerUUID).showPage(player.getGameMode());
     }
 
     // ======================================
@@ -263,7 +271,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 litr.remove();
             } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
                 litr.remove();
-            } else if (stack.getType() == noActionItem.getType() && stack.getItemMeta().getDisplayName() == noActionItem.getItemMeta().getDisplayName()) {
+            } else if (stack.getType() == noPageItem.getType() && stack.getItemMeta().getDisplayName() == noPageItem.getItemMeta().getDisplayName()) {
                 litr.remove();
             }
         }

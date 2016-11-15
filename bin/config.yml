@@ -69,8 +69,8 @@ items:
         lore:
         - '&3Page {CURRENT}/{MAX}'
 
-    # The no pages button item
-    noAction:
+    # The no page button item
+    noPage:
         ID: 160
         variation: 7
         name: '&6No Pages'
