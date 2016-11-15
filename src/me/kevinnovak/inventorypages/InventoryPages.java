@@ -74,9 +74,12 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     public void onDisable() {
         for (Player player: Bukkit.getServer().getOnlinePlayers()) {
-            // update inventories to hashmap and save to file
-            updateInvToHashMap(player);
-            saveInvFromHashMapToFile(player);
+            String playerUUID = player.getUniqueId().toString();
+            if (playerInvs.containsKey(playerUUID)) {
+                // update inventories to hashmap and save to file
+                updateInvToHashMap(player);
+                saveInvFromHashMapToFile(player);
+            }
         }
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
     }
@@ -115,34 +118,34 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void saveInvFromHashMapToFile(Player player) {
         String playerUUID = player.getUniqueId().toString();
         if (playerInvs.containsKey(playerUUID)) {
-            File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1)  + "/" + playerUUID + ".yml");
+            File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1) + "/" + playerUUID + ".yml");
             FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
             // save survival items
             for (Entry < Integer, ArrayList < ItemStack >> pageItemEntry: playerInvs.get(playerUUID).getItems().entrySet()) {
                 for (int i = 0; i < pageItemEntry.getValue().size(); i++) {
-                	if (pageItemEntry.getValue().get(i) != null) {
-                		playerData.set("items.main." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
-                	} else {
-                		playerData.set("items.main." + pageItemEntry.getKey() + "." + i, null);
-                	}
+                    if (pageItemEntry.getValue().get(i) != null) {
+                        playerData.set("items.main." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
+                    } else {
+                        playerData.set("items.main." + pageItemEntry.getKey() + "." + i, null);
+                    }
                 }
             }
 
             // save creative items
             if (playerInvs.get(playerUUID).hasUsedCreative()) {
                 for (int i = 0; i < playerInvs.get(playerUUID).getCreativeItems().size(); i++) {
-                	if (playerInvs.get(playerUUID).getCreativeItems().get(i) != null) {
-                		playerData.set("items.creative.0." + i, InventoryStringDeSerializer.toBase64(playerInvs.get(playerUUID).getCreativeItems().get(i)));
-                	} else {
-                		playerData.set("items.creative.0." + i, null);
-                	}
+                    if (playerInvs.get(playerUUID).getCreativeItems().get(i) != null) {
+                        playerData.set("items.creative.0." + i, InventoryStringDeSerializer.toBase64(playerInvs.get(playerUUID).getCreativeItems().get(i)));
+                    } else {
+                        playerData.set("items.creative.0." + i, null);
+                    }
                 }
             }
-            
+
             // save current page
             playerData.set("page", playerInvs.get(playerUUID).getPage());
-            
+
             try {
                 playerData.save(playerFile);
             } catch (IOException e) {
@@ -156,60 +159,64 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     public void loadInvFromFileIntoHashMap(Player player) throws IOException {
         int maxPage = 1;
+        Boolean foundPerm = false;
         for (int i = 2; i < 101; i++) {
             if (player.hasPermission("inventorypages.pages." + i)) {
+                foundPerm = true;
                 maxPage = i - 1;
             }
         }
 
-        String playerUUID = player.getUniqueId().toString();
-        CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
+        if (foundPerm) {
+            String playerUUID = player.getUniqueId().toString();
+            CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
 
-        File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1)  + "/" + playerUUID + ".yml");
-        FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
+            File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1) + "/" + playerUUID + ".yml");
+            FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
-        if (playerFile.exists()) {
-        	// load survival items
-            HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
+            if (playerFile.exists()) {
+                // load survival items
+                HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
 
-            for (int i=0; i<maxPage+1; i++) {
-	            Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + i);
-	            ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
-	            for (int j = 0; j < 25; j++) {
-	            	ItemStack item = null;
-	            	if (playerData.contains("items.main." + i + "." + j)) {
-	                	if (playerData.getString("items.main." + i + "." + j) != null) {
-	                		item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.main." + i + "." + j))[0];
-	                	}
-	            	}
-	                pageItems.add(item);
-	            }
-	            pageItemHashMap.put(i, pageItems);
+                for (int i = 0; i < maxPage + 1; i++) {
+                    Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + i);
+                    ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
+                    for (int j = 0; j < 25; j++) {
+                        ItemStack item = null;
+                        if (playerData.contains("items.main." + i + "." + j)) {
+                            if (playerData.getString("items.main." + i + "." + j) != null) {
+                                item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.main." + i + "." + j))[0];
+                            }
+                        }
+                        pageItems.add(item);
+                    }
+                    pageItemHashMap.put(i, pageItems);
+                }
+
+                inventory.setItems(pageItemHashMap);
+
+                // load creative items
+                if (playerData.contains("items.creative.0")) {
+                    ArrayList < ItemStack > creativeItems = new ArrayList < ItemStack > (27);
+                    for (int i = 0; i < 27; i++) {
+                        ItemStack item = null;
+                        if (playerData.contains("items.creative.0." + i)) {
+                            item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.creative.0." + i))[0];
+                        }
+                        creativeItems.add(item);
+                    }
+                    inventory.setCreativeItems(creativeItems);
+                }
+
+                // load page
+                if (playerData.contains("page")) {
+                    inventory.setPage(playerData.getInt("page"));
+                }
+
             }
-
-            inventory.setItems(pageItemHashMap);
-            
-            // load creative items
-            if (playerData.contains("items.creative.0")) {
-                ArrayList< ItemStack > creativeItems = new ArrayList< ItemStack > (27);
-            	for (int i = 0; i < 27; i++) {
-            		ItemStack item = null;
-            		if (playerData.contains("items.creative.0." + i)) {
-            			item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.creative.0." + i))[0];
-            		}
-            		creativeItems.add(item);
-            	}
-            	inventory.setCreativeItems(creativeItems);
-            }
-            
-            // load page
-            if (playerData.contains("page")) {
-            	inventory.setPage(playerData.getInt("page"));
-            }
-
+            playerInvs.put(playerUUID, inventory);
+            playerInvs.get(playerUUID).showPage(player.getGameMode());
         }
-        playerInvs.put(playerUUID, inventory);
-        playerInvs.get(playerUUID).showPage(player.getGameMode());
     }
 
     // ======================================
@@ -247,9 +254,12 @@ public class InventoryPages extends JavaPlugin implements Listener {
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) throws InterruptedException {
         Player player = event.getPlayer();
-        updateInvToHashMap(player);
-        saveInvFromHashMapToFile(player);
-        removeInvFromHashMap(player);
+        String playerUUID = player.getUniqueId().toString();
+        if (playerInvs.containsKey(playerUUID)) {
+            updateInvToHashMap(player);
+            saveInvFromHashMapToFile(player);
+            removeInvFromHashMap(player);
+        }
     }
 
     // ======================================
@@ -258,21 +268,23 @@ public class InventoryPages extends JavaPlugin implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        String playerUUID = player.getUniqueId().toString();
+        if (playerInvs.containsKey(playerUUID)) {
+            //save items before death
+            updateInvToHashMap(player);
 
-        //save items before death
-        updateInvToHashMap(player);
-
-        List < ItemStack > drops = event.getDrops();
-        event.setKeepLevel(true);
-        ListIterator < ItemStack > litr = drops.listIterator();
-        while (litr.hasNext()) {
-            ItemStack stack = litr.next();
-            if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
-                litr.remove();
-            } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
-                litr.remove();
-            } else if (stack.getType() == noPageItem.getType() && stack.getItemMeta().getDisplayName() == noPageItem.getItemMeta().getDisplayName()) {
-                litr.remove();
+            List < ItemStack > drops = event.getDrops();
+            event.setKeepLevel(true);
+            ListIterator < ItemStack > litr = drops.listIterator();
+            while (litr.hasNext()) {
+                ItemStack stack = litr.next();
+                if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName() == prevItem.getItemMeta().getDisplayName()) {
+                    litr.remove();
+                } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName() == nextItem.getItemMeta().getDisplayName()) {
+                    litr.remove();
+                } else if (stack.getType() == noPageItem.getType() && stack.getItemMeta().getDisplayName() == noPageItem.getItemMeta().getDisplayName()) {
+                    litr.remove();
+                }
             }
         }
     }
@@ -284,13 +296,15 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         String playerUUID = player.getUniqueId().toString();
-        GameMode gm = player.getGameMode();
+        if (playerInvs.containsKey(playerUUID)) {
+            GameMode gm = player.getGameMode();
 
-        // saves empty inventory (other than next and prev)
-        // disable this if you want to keep items
-        updateInvToHashMap(player);
+            // saves empty inventory (other than next and prev)
+            // disable this if you want to keep items
+            updateInvToHashMap(player);
 
-        playerInvs.get(playerUUID).showPage(gm);
+            playerInvs.get(playerUUID).showPage(gm);
+        }
     }
 
     // ======================================
@@ -306,17 +320,19 @@ public class InventoryPages extends JavaPlugin implements Listener {
                     HumanEntity human = event.getWhoClicked();
                     if (human instanceof Player) {
                         Player player = (Player) human;
-                        GameMode gm = player.getGameMode();
-                        if (gm != GameMode.CREATIVE) {
-                            String playerUUID = (String) player.getUniqueId().toString();
-                            int slot = event.getSlot();
-                            player.sendMessage("Clicked Slot: " + slot);
-                            if (slot == prevPos + 9) {
-                                event.setCancelled(true);
-                                playerInvs.get(playerUUID).prevPage();
-                            } else if (slot == nextPos + 9) {
-                                event.setCancelled(true);
-                                playerInvs.get(playerUUID).nextPage();
+                        String playerUUID = player.getUniqueId().toString();
+                        if (playerInvs.containsKey(playerUUID)) {
+                            GameMode gm = player.getGameMode();
+                            if (gm != GameMode.CREATIVE) {
+                                int slot = event.getSlot();
+                                player.sendMessage("Clicked Slot: " + slot);
+                                if (slot == prevPos + 9) {
+                                    event.setCancelled(true);
+                                    playerInvs.get(playerUUID).prevPage();
+                                } else if (slot == nextPos + 9) {
+                                    event.setCancelled(true);
+                                    playerInvs.get(playerUUID).nextPage();
+                                }
                             }
                         }
                     }
@@ -332,7 +348,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
         String playerUUID = player.getUniqueId().toString();
-        playerInvs.get(playerUUID).saveCurrentPage();
-        playerInvs.get(playerUUID).showPage(event.getNewGameMode());
+        if (playerInvs.containsKey(playerUUID)) {
+            playerInvs.get(playerUUID).saveCurrentPage();
+            playerInvs.get(playerUUID).showPage(event.getNewGameMode());
+        }
     }
 }
