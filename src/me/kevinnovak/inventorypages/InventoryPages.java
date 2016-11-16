@@ -170,51 +170,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         if (foundPerm) {
             String playerUUID = player.getUniqueId().toString();
-            CustomInventory inventory = new CustomInventory(player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
-
-            File playerFile = new File(getDataFolder() + "/inventories/" + playerUUID.substring(0, 1) + "/" + playerUUID + ".yml");
-            FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
-
-            if (playerFile.exists()) {
-                // load survival items
-                HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
-
-                for (int i = 0; i < maxPage + 1; i++) {
-                    Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + i);
-                    ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
-                    for (int j = 0; j < 25; j++) {
-                        ItemStack item = null;
-                        if (playerData.contains("items.main." + i + "." + j)) {
-                            if (playerData.getString("items.main." + i + "." + j) != null) {
-                                item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.main." + i + "." + j))[0];
-                            }
-                        }
-                        pageItems.add(item);
-                    }
-                    pageItemHashMap.put(i, pageItems);
-                }
-
-                inventory.setItems(pageItemHashMap);
-
-                // load creative items
-                if (playerData.contains("items.creative.0")) {
-                    ArrayList < ItemStack > creativeItems = new ArrayList < ItemStack > (27);
-                    for (int i = 0; i < 27; i++) {
-                        ItemStack item = null;
-                        if (playerData.contains("items.creative.0." + i)) {
-                            item = InventoryStringDeSerializer.stacksFromBase64(playerData.getString("items.creative.0." + i))[0];
-                        }
-                        creativeItems.add(item);
-                    }
-                    inventory.setCreativeItems(creativeItems);
-                }
-
-                // load page
-                if (playerData.contains("page")) {
-                    inventory.setPage(playerData.getInt("page"));
-                }
-
-            }
+            CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
+      
             playerInvs.put(playerUUID, inventory);
             playerInvs.get(playerUUID).showPage(player.getGameMode());
         }
