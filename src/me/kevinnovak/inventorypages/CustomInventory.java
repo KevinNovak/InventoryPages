@@ -50,8 +50,6 @@ public class CustomInventory {
             creativeItems.add(null);
         }
 
-        saveCurrentPage();
-
         String playerUUID = player.getUniqueId().toString();
         File playerFile = new File(this.plugin.getDataFolder() + "/inventories/" + playerUUID.substring(0, 1) + "/" + playerUUID + ".yml");
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
@@ -105,42 +103,30 @@ public class CustomInventory {
         }
 
         if (player.getGameMode() != GameMode.CREATIVE) {
-            // check for items in essential slots
-            ItemStack itemInPrevItemSlot = this.player.getInventory().getItem(prevPos + 9);
-            if (itemInPrevItemSlot != null) {
-                if (itemInPrevItemSlot.getType() != prevItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != prevItem.getItemMeta().getDisplayName()) {
-                    if (itemInPrevItemSlot.getType() != noPageItem.getType() && itemInPrevItemSlot.getItemMeta().getDisplayName() != noPageItem.getItemMeta().getDisplayName()) {
-                        SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
-                        if (nextFreeSpace != null) {
-                            this.player.sendMessage("1");
-                            this.player.sendMessage("page: " + nextFreeSpace.getKey());
-                            this.player.sendMessage("pos: " + nextFreeSpace.getValue());
-                            this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInPrevItemSlot);
-                        } else {
-                            this.player.sendMessage("2");
-                            this.player.getWorld().dropItem(player.getLocation(), itemInPrevItemSlot);
-                        }
-                        this.player.sendMessage("3");
-                        this.player.getInventory().setItem(prevPos, null);
+            for (int i = 0; i < 27; i++) {
+                ItemStack item = player.getInventory().getItem(i + 9);
+                if (item != null) {
+                    SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
+                    if (nextFreeSpace != null) {
+                        this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), item);
+                    } else {
+                        this.player.getWorld().dropItem(player.getLocation(), item);
                     }
                 }
             }
-            ItemStack itemInNextItemSlot = this.player.getInventory().getItem(nextPos + 9);
-            if (itemInNextItemSlot != null) {
-                if (itemInNextItemSlot.getType() != nextItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != nextItem.getItemMeta().getDisplayName()) {
-                    if (itemInNextItemSlot.getType() != noPageItem.getType() && itemInNextItemSlot.getItemMeta().getDisplayName() != noPageItem.getItemMeta().getDisplayName()) {
-                        SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
-                        if (nextFreeSpace != null) {
-                            this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), itemInNextItemSlot);
-                        } else {
-                            this.player.getWorld().dropItem(player.getLocation(), itemInNextItemSlot);
-                        }
-                        this.player.getInventory().setItem(nextPos, null);
+        } else {
+            for (int i = 0; i < 27; i++) {
+                ItemStack item = player.getInventory().getItem(i + 9);
+                if (item != null) {
+                    int nextFreeSpace = nextCreativeFreeSpace();
+                    if (nextFreeSpace != -1) {
+                        this.creativeItems.set(nextFreeSpace, item);
+                    } else {
+                        this.player.getWorld().dropItem(player.getLocation(), item);
                     }
                 }
             }
         }
-
         player.sendMessage("Your max pages are: " + (maxPage + 1));
     }
 
@@ -342,5 +328,17 @@ public class CustomInventory {
             }
         }
         return null;
+    }
+
+    // ======================================
+    // Next Creative Free Space
+    // ======================================
+    int nextCreativeFreeSpace() {
+        for (Integer i = 0; i < 27; i++) {
+            if (creativeItems.get(i) == null) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

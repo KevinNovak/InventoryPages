@@ -79,7 +79,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 // update inventories to hashmap and save to file
                 updateInvToHashMap(player);
                 saveInvFromHashMapToFile(player);
-                removeSwitcherItems(player);
+                clearItems(player);
             }
         }
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
@@ -171,7 +171,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
         if (foundPerm) {
             String playerUUID = player.getUniqueId().toString();
             CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
-      
             playerInvs.put(playerUUID, inventory);
             playerInvs.get(playerUUID).showPage(player.getGameMode());
         }
@@ -196,24 +195,14 @@ public class InventoryPages extends JavaPlugin implements Listener {
             playerInvs.remove(playerUUID);
         }
     }
-    
+
     // ======================================
-    // Remove Switcher Items
+    // Clear Items
     // ======================================
-    public void removeSwitcherItems(Player player) {
-    	ItemStack[] items = player.getInventory().getContents();
-    	for(int i=0; i<items.length; i++) {
-    		if(items[i] != null) {
-        		ItemStack item = items[i];
-                if (item.getType() == prevItem.getType() && item.getItemMeta().getDisplayName().equals(prevItem.getItemMeta().getDisplayName())) {
-                	player.getInventory().setItem(i, null);
-                } else if (item.getType() == nextItem.getType() && item.getItemMeta().getDisplayName().equals(nextItem.getItemMeta().getDisplayName())) {
-                	player.getInventory().setItem(i, null);
-                } else if (item.getType() == noPageItem.getType() && item.getItemMeta().getDisplayName().equals(noPageItem.getItemMeta().getDisplayName())) {
-                	player.getInventory().setItem(i, null);
-                }
-    		}
-    	}
+    public void clearItems(Player player) {
+        for (int i = 0; i < 27; i++) {
+            player.getInventory().setItem(i + 9, null);
+        }
     }
 
     // ======================================
@@ -236,7 +225,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             updateInvToHashMap(player);
             saveInvFromHashMapToFile(player);
             removeInvFromHashMap(player);
-            removeSwitcherItems(player);
+            clearItems(player);
         }
     }
 
