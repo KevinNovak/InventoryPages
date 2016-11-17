@@ -336,16 +336,23 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
+    	String cmdLine = event.getMessage().toLowerCase();
         for (String clearCommand: this.clearCommands) {
-            if (event.getMessage().toLowerCase().startsWith("/" + clearCommand + " ") || event.getMessage().equalsIgnoreCase("/" + clearCommand)) {
-                Player player = event.getPlayer();
+            if (cmdLine.startsWith("/" + clearCommand + " ") || cmdLine.equalsIgnoreCase("/" + clearCommand)) {
+            	Player player = event.getPlayer();
                 String playerUUID = player.getUniqueId().toString();
-
+                
                 if (playerInvs.containsKey(playerUUID)) {
                     event.setCancelled(true);
                 	if (player.hasPermission("inventorypages.clear")) {
-                        playerInvs.get(playerUUID).clearCurrentPage();
+                		GameMode gm = player.getGameMode();
+                    	if (cmdLine.startsWith("/" + clearCommand + " all ") || cmdLine.equalsIgnoreCase("/" + clearCommand + " all")) {
+                    		playerInvs.get(playerUUID).clearAllPages(gm);
+                    	} else {
+                            playerInvs.get(playerUUID).clearPage(gm);
+                    	}
                         clearHotbar(player);
+                        playerInvs.get(playerUUID).showPage(gm);
                 	}
                 }
             }

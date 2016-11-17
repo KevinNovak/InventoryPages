@@ -132,24 +132,39 @@ public class CustomInventory {
             }
         }
     }
-    
+
     // ======================================
-    // Clear Current Page
+    // Clear Page
     // ======================================
-    void clearCurrentPage() {
-    	GameMode gm = player.getGameMode();
+    void clearPage(GameMode gm) {
+        clearPage(this.page, gm);
+    }
+
+    void clearPage(int page, GameMode gm) {
         if (gm != GameMode.CREATIVE) {
             ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
             for (int i = 0; i < 25; i++) {
-            	pageItems.add(null);
+                pageItems.add(null);
             }
-            this.items.put(this.page, pageItems);
+            this.items.put(page, pageItems);
         } else {
             for (int i = 0; i < 27; i++) {
                 creativeItems.set(i, null);
             }
         }
-        this.showPage(this.page, gm);
+    }
+
+    // ======================================
+    // Clear All Pages
+    // ======================================
+    void clearAllPages(GameMode gm) {
+        if (gm != GameMode.CREATIVE) {
+            for (int i = 0; i < this.maxPage + 1; i++) {
+                clearPage(i, gm);
+            }
+        } else {
+            clearPage(gm);
+        }
     }
 
     // ======================================
