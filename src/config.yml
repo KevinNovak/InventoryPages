@@ -78,6 +78,8 @@ items:
         - '&3Page {CURRENT}/{MAX}'
 
 commands:
+	# Clears the current page and hotbar
     clear:
+    	# Will override any existing commands with same name
         aliases:
         - 'clear'
