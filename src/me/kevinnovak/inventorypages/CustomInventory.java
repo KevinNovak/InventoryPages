@@ -45,7 +45,7 @@ public class CustomInventory {
             }
         }
 
-        // init creative inventory
+        // initialize creative inventory
         for (int i = 0; i < 27; i++) {
             creativeItems.add(null);
         }
@@ -102,31 +102,15 @@ public class CustomInventory {
             }
         }
 
-        if (player.getGameMode() != GameMode.CREATIVE) {
-            for (int i = 0; i < 27; i++) {
-                ItemStack item = player.getInventory().getItem(i + 9);
-                if (item != null) {
-                    SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
-                    if (nextFreeSpace != null) {
-                        this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), item);
-                    } else {
-                        this.player.getWorld().dropItem(player.getLocation(), item);
-                    }
-                }
-            }
-        } else {
-            for (int i = 0; i < 27; i++) {
-                ItemStack item = player.getInventory().getItem(i + 9);
-                if (item != null) {
-                    int nextFreeSpace = nextCreativeFreeSpace();
-                    if (nextFreeSpace != -1) {
-                        this.creativeItems.set(nextFreeSpace, item);
-                    } else {
-                        this.player.getWorld().dropItem(player.getLocation(), item);
-                    }
-                }
+        GameMode gm = player.getGameMode();
+
+        for (int i = 0; i < 27; i++) {
+            ItemStack item = player.getInventory().getItem(i + 9);
+            if (item != null) {
+                this.storeOrDropItem(item, gm);
             }
         }
+
         player.sendMessage("Your max pages are: " + (maxPage + 1));
     }
 
@@ -340,5 +324,27 @@ public class CustomInventory {
             }
         }
         return -1;
+    }
+
+    // ======================================
+    // Store/Drop Item
+    // ======================================
+    void storeOrDropItem(ItemStack item, GameMode gm) {
+        if (gm != GameMode.CREATIVE) {
+            SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
+            if (nextFreeSpace != null) {
+                this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), item);
+            } else {
+                this.player.getWorld().dropItem(player.getLocation(), item);
+            }
+        } else {
+            int nextFreeSpace = nextCreativeFreeSpace();
+            if (nextFreeSpace != -1) {
+                this.creativeItems.set(nextFreeSpace, item);
+            } else {
+                this.player.getWorld().dropItem(player.getLocation(), item);
+            }
+        }
+
     }
 }
