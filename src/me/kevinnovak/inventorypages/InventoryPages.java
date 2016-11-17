@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -338,9 +336,16 @@ public class InventoryPages extends JavaPlugin implements Listener {
       		
               Bukkit.getLogger().info("1");
               playerInvs.get(playerUUID).clearCurrentPage();
-              for (int i=0; i<9; i++) {
-                  player.getInventory().setItem(i, null);
-              }
+              clearHotbar(player);
+        }
+    }
+    
+    // ======================
+    // Clear Player Hotbar
+    // ======================
+    public void clearHotbar(Player player) {
+        for (int i=0; i<9; i++) {
+            player.getInventory().setItem(i, null);
         }
     }
 }
