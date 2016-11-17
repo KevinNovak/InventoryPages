@@ -76,4 +76,8 @@ items:
         name: '&6No Pages'
         lore:
         - '&3Page {CURRENT}/{MAX}'
-        
+
+commands:
+    clear:
+        aliases:
+        - 'clear'

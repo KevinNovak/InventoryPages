@@ -35,6 +35,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
     private ItemStack nextItem, prevItem, noPageItem;
     private Integer prevPos, nextPos;
+    private List<String> clearCommands;
 
     // ======================================
     // Enable
@@ -59,6 +60,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
         // initialize next, prev items
         initItems();
 
+        // initialize commands
+        initCommands();
+        
         // load all online players into hashmap
         for (Player player: Bukkit.getServer().getOnlinePlayers()) {
             try {
@@ -113,6 +117,10 @@ public class InventoryPages extends JavaPlugin implements Listener {
         noPageItemMeta.setDisplayName(colorConv.convertConfig("items.noPage.name"));
         noPageItemMeta.setLore(colorConv.convertConfigList("items.noPage.lore"));
         noPageItem.setItemMeta(noPageItemMeta);
+    }
+    
+    public void initCommands() {
+    	clearCommands = getConfig().getStringList("commands.clear.aliases");
     }
 
     // ======================================
@@ -328,15 +336,16 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.getMessage().toLowerCase().startsWith("/clear")) {
-              event.setCancelled(true);
-              
-              Player player = event.getPlayer();
-              String playerUUID = player.getUniqueId().toString();
-      		
-              Bukkit.getLogger().info("1");
-              playerInvs.get(playerUUID).clearCurrentPage();
-              clearHotbar(player);
+        for (String clearCommand: this.clearCommands) {
+            if (event.getMessage().toLowerCase().startsWith("/" + clearCommand + " ") || event.getMessage().equalsIgnoreCase("/" + clearCommand)) {
+                event.setCancelled(true);
+
+                Player player = event.getPlayer();
+                String playerUUID = player.getUniqueId().toString();
+
+                playerInvs.get(playerUUID).clearCurrentPage();
+                clearHotbar(player);
+            }
         }
     }
     

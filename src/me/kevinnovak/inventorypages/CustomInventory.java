@@ -139,19 +139,16 @@ public class CustomInventory {
     void clearCurrentPage() {
     	GameMode gm = player.getGameMode();
         if (gm != GameMode.CREATIVE) {
-        	Bukkit.getLogger().info("2");
             ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
             for (int i = 0; i < 25; i++) {
             	pageItems.add(null);
             }
             this.items.put(this.page, pageItems);
         } else {
-        	Bukkit.getLogger().info("3");
             for (int i = 0; i < 27; i++) {
                 creativeItems.set(i, null);
             }
         }
-        Bukkit.getLogger().info("4");
         this.showPage(this.page, gm);
     }
 
