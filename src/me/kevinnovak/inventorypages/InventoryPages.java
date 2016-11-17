@@ -338,13 +338,16 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
         for (String clearCommand: this.clearCommands) {
             if (event.getMessage().toLowerCase().startsWith("/" + clearCommand + " ") || event.getMessage().equalsIgnoreCase("/" + clearCommand)) {
-                event.setCancelled(true);
-
                 Player player = event.getPlayer();
                 String playerUUID = player.getUniqueId().toString();
 
-                playerInvs.get(playerUUID).clearCurrentPage();
-                clearHotbar(player);
+                if (playerInvs.containsKey(playerUUID)) {
+                    event.setCancelled(true);
+                	if (player.hasPermission("inventorypages.clear")) {
+                        playerInvs.get(playerUUID).clearCurrentPage();
+                        clearHotbar(player);
+                	}
+                }
             }
         }
     }
