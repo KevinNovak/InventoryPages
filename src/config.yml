@@ -79,6 +79,7 @@ items:
 
 commands:
     # Clears the current page and hotbar
+    #     Add "all" after a clear command to clear all pages and hotbar
     clear:
         # Will override any existing commands with same name
         aliases:
