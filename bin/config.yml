@@ -84,8 +84,13 @@ commands:
         # Will override any existing commands with same name
         aliases:
         - 'clear'
+        - 'clearinventory'
+        - 'clearinvent'
+        - 'ci'
+        - 'clean'
     # Cancels invsee command
     invsee:
         # Will override any existing commands with same name
         aliases:
         - 'invsee'
+        - 'isee'
