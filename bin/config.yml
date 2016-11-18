@@ -88,13 +88,13 @@ commands:
         - 'clearinvent'
         - 'ci'
         - 'clean'
-    # Cancels invsee command
+    # Informs other plugins with invsee of page switcher items
     invsee:
-        # Will override any existing commands with same name
-        aliases:
-        - 'invsee'
-        - 'isee'
-        - 'is'
-        - 'seeinv'
-        - 'si'
-        - 'see'
+        # Height of plugins invsee inventory
+        #     Essentials: 4
+        #     OpenInv: 5
+        height: 4
+        # Height where main inventory (normally above hotbar) starts
+        #     Essentials: 1
+        #     OpenInv: 3
+        start: 1

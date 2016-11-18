@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,6 +24,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,8 +35,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
     ColorConverter colorConv = new ColorConverter(this);
 
     private ItemStack nextItem, prevItem, noPageItem;
-    private Integer prevPos, nextPos;
-    private List<String> clearCommands, invseeCommands;
+    private Integer prevPos, nextPos, topPrevPos, topNextPos, bottomPrevPos, bottomNextPos;
+    private List < String > clearCommands;
 
     // ======================================
     // Enable
@@ -62,7 +63,10 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         // initialize commands
         initCommands();
-        
+
+        // initialize invsee
+        initInvsee();
+
         // load all online players into hashmap
         for (Player player: Bukkit.getServer().getOnlinePlayers()) {
             try {
@@ -118,10 +122,18 @@ public class InventoryPages extends JavaPlugin implements Listener {
         noPageItemMeta.setLore(colorConv.convertConfigList("items.noPage.lore"));
         noPageItem.setItemMeta(noPageItemMeta);
     }
-    
+
     public void initCommands() {
-    	clearCommands = getConfig().getStringList("commands.clear.aliases");
-    	invseeCommands = getConfig().getStringList("commands.invsee.aliases");
+        clearCommands = getConfig().getStringList("commands.clear.aliases");
+    }
+
+    public void initInvsee() {
+        int invseeHeight = getConfig().getInt("commands.invsee.height");
+        int invseeStart = getConfig().getInt("commands.invsee.start");
+        topPrevPos = (((invseeHeight - (invseeStart + 2)) * 9) + prevPos);
+        topNextPos = (((invseeHeight - (invseeStart + 2)) * 9) + nextPos);
+        bottomPrevPos = ((invseeHeight * 9) + prevPos);
+        bottomNextPos = ((invseeHeight * 9) + nextPos);
     }
 
     // ======================================
@@ -290,26 +302,65 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Inventory eventInv = event.getClickedInventory();
-        if (eventInv != null) {
-            InventoryType eventInvType = event.getClickedInventory().getType();
-            if (eventInvType != null) {
-                if (eventInvType == InventoryType.PLAYER) {
-                    HumanEntity human = event.getWhoClicked();
-                    if (human instanceof Player) {
-                        Player player = (Player) human;
-                        String playerUUID = player.getUniqueId().toString();
-                        if (playerInvs.containsKey(playerUUID)) {
-                            GameMode gm = player.getGameMode();
-                            if (gm != GameMode.CREATIVE) {
-                                int slot = event.getSlot();
-                                player.sendMessage("Clicked Slot: " + slot);
-                                if (slot == prevPos + 9) {
-                                    event.setCancelled(true);
-                                    playerInvs.get(playerUUID).prevPage();
-                                } else if (slot == nextPos + 9) {
-                                    event.setCancelled(true);
-                                    playerInvs.get(playerUUID).nextPage();
+        InventoryView invView = event.getView();
+        Inventory bottomInv = invView.getBottomInventory();
+        Inventory topInv = invView.getTopInventory();
+        if (bottomInv != null) {
+            InventoryType bottomInvType = bottomInv.getType();
+            if (bottomInvType != null) {
+                if (bottomInvType == InventoryType.PLAYER) {
+                    InventoryHolder bottomHolder = bottomInv.getHolder();
+                    if (bottomHolder instanceof Player) {
+                        Player bottomPlayer = (Player) bottomHolder;
+                        if (topInv != null) {
+                            InventoryType topInvType = invView.getTopInventory().getType();
+                            if (topInvType != null) {
+                                if (topInvType != InventoryType.PLAYER) {
+                                    String playerUUID = bottomPlayer.getUniqueId().toString();
+                                    if (playerInvs.containsKey(playerUUID)) {
+                                        GameMode gm = bottomPlayer.getGameMode();
+                                        if (gm != GameMode.CREATIVE) {
+                                            int slot = event.getSlot();
+                                            bottomPlayer.sendMessage("Clicked Slot: " + slot);
+                                            if (slot == prevPos + 9) {
+                                                event.setCancelled(true);
+                                                playerInvs.get(playerUUID).prevPage();
+                                            } else if (slot == nextPos + 9) {
+                                                event.setCancelled(true);
+                                                playerInvs.get(playerUUID).nextPage();
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    InventoryHolder topHolder = topInv.getHolder();
+                                    if (topHolder instanceof Player) {
+                                        Player topPlayer = (Player) topHolder;
+                                        String topPlayerUUID = topPlayer.getUniqueId().toString();
+                                        String bottomPlayerUUID = bottomPlayer.getUniqueId().toString();
+
+                                        int slot = event.getRawSlot();
+                                        bottomPlayer.sendMessage("Clicked Slot: " + slot);
+
+                                        if (hasSwitcherItems(topPlayer)) {
+                                            if (slot == topPrevPos) {
+                                                event.setCancelled(true);
+                                                playerInvs.get(topPlayerUUID).prevPage();
+                                            } else if (slot == topNextPos) {
+                                                event.setCancelled(true);
+                                                playerInvs.get(topPlayerUUID).nextPage();
+                                            }
+                                        }
+
+                                        if (hasSwitcherItems(bottomPlayer)) {
+                                            if (slot == bottomPrevPos) {
+                                                event.setCancelled(true);
+                                                playerInvs.get(bottomPlayerUUID).prevPage();
+                                            } else if (slot == bottomNextPos) {
+                                                event.setCancelled(true);
+                                                playerInvs.get(bottomPlayerUUID).nextPage();
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -317,6 +368,16 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 }
             }
         }
+    }
+
+    public Boolean hasSwitcherItems(Player player) {
+        String playerUUID = player.getUniqueId().toString();
+        if (playerInvs.containsKey(playerUUID)) {
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ======================================
@@ -331,48 +392,41 @@ public class InventoryPages extends JavaPlugin implements Listener {
             playerInvs.get(playerUUID).showPage(event.getNewGameMode());
         }
     }
-    
+
     // ======================
     // Commands
     // ======================
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
-    	String cmdLine = event.getMessage().toLowerCase();
-    	// clear
+        String cmdLine = event.getMessage().toLowerCase();
+        // clear
         for (String clearCommand: this.clearCommands) {
             if (cmdLine.startsWith("/" + clearCommand + " ") || cmdLine.equalsIgnoreCase("/" + clearCommand)) {
-            	Player player = event.getPlayer();
+                Player player = event.getPlayer();
                 String playerUUID = player.getUniqueId().toString();
-                
+
                 if (playerInvs.containsKey(playerUUID)) {
                     event.setCancelled(true);
-                	if (player.hasPermission("inventorypages.clear")) {
-                		GameMode gm = player.getGameMode();
-                    	if (cmdLine.startsWith("/" + clearCommand + " all ") || cmdLine.equalsIgnoreCase("/" + clearCommand + " all")) {
-                    		playerInvs.get(playerUUID).clearAllPages(gm);
-                    	} else {
+                    if (player.hasPermission("inventorypages.clear")) {
+                        GameMode gm = player.getGameMode();
+                        if (cmdLine.startsWith("/" + clearCommand + " all ") || cmdLine.equalsIgnoreCase("/" + clearCommand + " all")) {
+                            playerInvs.get(playerUUID).clearAllPages(gm);
+                        } else {
                             playerInvs.get(playerUUID).clearPage(gm);
-                    	}
+                        }
                         clearHotbar(player);
                         playerInvs.get(playerUUID).showPage(gm);
-                	}
+                    }
                 }
             }
         }
-        
-        // invsee
-        for (String invseeCommand: this.invseeCommands) {
-        	if (cmdLine.startsWith("/" + invseeCommand + " ") || cmdLine.equalsIgnoreCase("/" + invseeCommand)) {
-        		event.setCancelled(true);
-        	}
-        }
     }
-    
+
     // ======================
     // Clear Player Hotbar
     // ======================
     public void clearHotbar(Player player) {
-        for (int i=0; i<9; i++) {
+        for (int i = 0; i < 9; i++) {
             player.getInventory().setItem(i, null);
         }
     }
