@@ -94,7 +94,7 @@ commands:
         #     Essentials: 4
         #     OpenInv: 5
         height: 4
-        # Height where main inventory (normally above hotbar) starts
+        # Height where other players main inventory starts (row normally above hotbar)
         #     Essentials: 1
         #     OpenInv: 3
         start: 1
