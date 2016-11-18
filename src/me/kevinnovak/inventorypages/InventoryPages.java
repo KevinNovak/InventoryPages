@@ -35,7 +35,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
     private ItemStack nextItem, prevItem, noPageItem;
     private Integer prevPos, nextPos;
-    private List<String> clearCommands;
+    private List<String> clearCommands, invseeCommands;
 
     // ======================================
     // Enable
@@ -121,6 +121,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     
     public void initCommands() {
     	clearCommands = getConfig().getStringList("commands.clear.aliases");
+    	invseeCommands = getConfig().getStringList("commands.invsee.aliases");
     }
 
     // ======================================
@@ -337,6 +338,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
     	String cmdLine = event.getMessage().toLowerCase();
+    	// clear
         for (String clearCommand: this.clearCommands) {
             if (cmdLine.startsWith("/" + clearCommand + " ") || cmdLine.equalsIgnoreCase("/" + clearCommand)) {
             	Player player = event.getPlayer();
@@ -356,6 +358,13 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 	}
                 }
             }
+        }
+        
+        // invsee
+        for (String invseeCommand: this.invseeCommands) {
+        	if (cmdLine.startsWith("/" + invseeCommand + " ") || cmdLine.equalsIgnoreCase("/" + invseeCommand)) {
+        		event.setCancelled(true);
+        	}
         }
     }
     
