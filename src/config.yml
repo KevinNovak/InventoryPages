@@ -94,3 +94,7 @@ commands:
         aliases:
         - 'invsee'
         - 'isee'
+        - 'is'
+        - 'seeinv'
+        - 'si'
+        - 'see'
