@@ -17,7 +17,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -25,7 +24,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,7 +33,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     ColorConverter colorConv = new ColorConverter(this);
 
     private ItemStack nextItem, prevItem, noPageItem;
-    private Integer prevPos, nextPos, topPrevPos, topNextPos, bottomPrevPos, bottomNextPos;
+    private Integer prevPos, nextPos;
     private List < String > clearCommands;
 
     // ======================================
@@ -63,9 +61,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         // initialize commands
         initCommands();
-
-        // initialize invsee
-        initInvsee();
 
         // load all online players into hashmap
         for (Player player: Bukkit.getServer().getOnlinePlayers()) {
@@ -125,15 +120,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
     public void initCommands() {
         clearCommands = getConfig().getStringList("commands.clear.aliases");
-    }
-
-    public void initInvsee() {
-        int invseeHeight = getConfig().getInt("commands.invsee.height");
-        int invseeStart = getConfig().getInt("commands.invsee.start");
-        topPrevPos = (((invseeHeight - (invseeStart + 2)) * 9) + prevPos);
-        topNextPos = (((invseeHeight - (invseeStart + 2)) * 9) + nextPos);
-        bottomPrevPos = ((invseeHeight * 9) + prevPos);
-        bottomNextPos = ((invseeHeight * 9) + nextPos);
     }
 
     // ======================================
@@ -263,17 +249,15 @@ public class InventoryPages extends JavaPlugin implements Listener {
             //save items before death
             updateInvToHashMap(player);
 
-            List < ItemStack > drops = event.getDrops();
-            event.setKeepLevel(true);
-            ListIterator < ItemStack > litr = drops.listIterator();
-            while (litr.hasNext()) {
-                ItemStack stack = litr.next();
-                if (stack.getType() == prevItem.getType() && stack.getItemMeta().getDisplayName().equals(prevItem.getItemMeta().getDisplayName())) {
-                    litr.remove();
-                } else if (stack.getType() == nextItem.getType() && stack.getItemMeta().getDisplayName().equals(nextItem.getItemMeta().getDisplayName())) {
-                    litr.remove();
-                } else if (stack.getType() == noPageItem.getType() && stack.getItemMeta().getDisplayName().equals(noPageItem.getItemMeta().getDisplayName())) {
-                    litr.remove();
+            if (hasSwitcherItems(player)) {
+                List < ItemStack > drops = event.getDrops();
+                event.setKeepLevel(true);
+                ListIterator < ItemStack > litr = drops.listIterator();
+                while (litr.hasNext()) {
+                    ItemStack item = litr.next();
+                    if (isSwitcherItem(item, prevItem) || isSwitcherItem(item, nextItem) || isSwitcherItem(item, noPageItem)) {
+                        litr.remove();
+                    }
                 }
             }
         }
@@ -302,69 +286,20 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        InventoryView invView = event.getView();
-        Inventory bottomInv = invView.getBottomInventory();
-        Inventory topInv = invView.getTopInventory();
-        if (bottomInv != null) {
-            InventoryType bottomInvType = bottomInv.getType();
-            if (bottomInvType != null) {
-                if (bottomInvType == InventoryType.PLAYER) {
-                    InventoryHolder bottomHolder = bottomInv.getHolder();
-                    if (bottomHolder instanceof Player) {
-                        Player bottomPlayer = (Player) bottomHolder;
-                        if (topInv != null) {
-                            InventoryType topInvType = invView.getTopInventory().getType();
-                            if (topInvType != null) {
-                                if (topInvType != InventoryType.PLAYER) {
-                                    String playerUUID = bottomPlayer.getUniqueId().toString();
-                                    if (playerInvs.containsKey(playerUUID)) {
-                                        GameMode gm = bottomPlayer.getGameMode();
-                                        if (gm != GameMode.CREATIVE) {
-                                            int slot = event.getSlot();
-                                            bottomPlayer.sendMessage("Clicked Slot: " + slot);
-                                            if (slot == prevPos + 9) {
-                                                event.setCancelled(true);
-                                                playerInvs.get(playerUUID).prevPage();
-                                            } else if (slot == nextPos + 9) {
-                                                event.setCancelled(true);
-                                                playerInvs.get(playerUUID).nextPage();
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    InventoryHolder topHolder = topInv.getHolder();
-                                    if (topHolder instanceof Player) {
-                                        Player topPlayer = (Player) topHolder;
-                                        String topPlayerUUID = topPlayer.getUniqueId().toString();
-                                        String bottomPlayerUUID = bottomPlayer.getUniqueId().toString();
-
-                                        int slot = event.getRawSlot();
-                                        bottomPlayer.sendMessage("Clicked Slot: " + slot);
-
-                                        if (hasSwitcherItems(topPlayer)) {
-                                            if (slot == topPrevPos) {
-                                                event.setCancelled(true);
-                                                playerInvs.get(topPlayerUUID).prevPage();
-                                            } else if (slot == topNextPos) {
-                                                event.setCancelled(true);
-                                                playerInvs.get(topPlayerUUID).nextPage();
-                                            }
-                                        }
-
-                                        if (hasSwitcherItems(bottomPlayer)) {
-                                            if (slot == bottomPrevPos) {
-                                                event.setCancelled(true);
-                                                playerInvs.get(bottomPlayerUUID).prevPage();
-                                            } else if (slot == bottomNextPos) {
-                                                event.setCancelled(true);
-                                                playerInvs.get(bottomPlayerUUID).nextPage();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+        Inventory clickedInv = event.getClickedInventory();
+        InventoryHolder holder = clickedInv.getHolder();
+        if (holder instanceof Player) {
+            Player player = (Player) holder;
+            if (hasSwitcherItems(player)) {
+                ItemStack item = event.getCurrentItem();
+                if (isSwitcherItem(item, prevItem)) {
+                    event.setCancelled(true);
+                    playerInvs.get(player.getUniqueId().toString()).prevPage();
+                } else if (isSwitcherItem(item, nextItem)) {
+                    event.setCancelled(true);
+                    playerInvs.get(player.getUniqueId().toString()).nextPage();
+                } else if (isSwitcherItem(item, noPageItem)) {
+                    event.setCancelled(true);
                 }
             }
         }
@@ -375,6 +310,23 @@ public class InventoryPages extends JavaPlugin implements Listener {
         if (playerInvs.containsKey(playerUUID)) {
             if (player.getGameMode() != GameMode.CREATIVE) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    public Boolean isSwitcherItem(ItemStack item, ItemStack switcherItem) {
+        if (item != null) {
+            if (item.getType() != null) {
+                if (item.getType().equals(switcherItem.getType())) {
+                    if (item.getItemMeta() != null) {
+                        if (item.getItemMeta().getDisplayName() != null) {
+                            if (item.getItemMeta().getDisplayName().equals(switcherItem.getItemMeta().getDisplayName())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
         }
         return false;
