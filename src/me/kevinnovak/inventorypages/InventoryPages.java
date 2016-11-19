@@ -17,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -354,15 +355,24 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // Get Clicked Inventory
     // ======================================
     public Inventory getClickedInventory(InventoryView view, int slot) {
+
+        int topInvSize = view.getTopInventory().getSize();
+        if (view.getTopInventory().getType() == InventoryType.PLAYER) {
+            int topInvRemainder = topInvSize % 9;
+            if (topInvRemainder != 0) {
+                topInvSize = topInvSize - topInvRemainder;
+            }
+        }
+
         Inventory clickedInventory;
         if (slot < 0) {
             clickedInventory = null;
-        } else if (view.getTopInventory() != null && slot < view.getTopInventory().getSize()) {
+        } else if (view.getTopInventory() != null && slot < topInvSize) {
             clickedInventory = view.getTopInventory();
         } else {
             clickedInventory = view.getBottomInventory();
         }
-    	return clickedInventory;
+        return clickedInventory;
     }
     
     // ======================================
