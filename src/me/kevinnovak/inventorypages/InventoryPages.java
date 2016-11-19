@@ -354,7 +354,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // Get Clicked Inventory
     // ======================================
     public Inventory getClickedInventory(InventoryView view, int slot) {
-        Inventory clickedInventory;;
+        Inventory clickedInventory;
         if (slot < 0) {
             clickedInventory = null;
         } else if (view.getTopInventory() != null && slot < view.getTopInventory().getSize()) {
