@@ -382,7 +382,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // Commands
     // ======================
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmdLine = event.getMessage().toLowerCase();
         // clear
         for (String clearCommand: this.clearCommands) {
