@@ -213,6 +213,48 @@ public class InventoryPages extends JavaPlugin implements Listener {
             player.getInventory().setItem(i + 9, null);
         }
     }
+    
+    // ======================
+    // Clear Player Hotbar
+    // ======================
+    public void clearHotbar(Player player) {
+        for (int i = 0; i < 9; i++) {
+            player.getInventory().setItem(i, null);
+        }
+    }
+    
+    // ======================================
+    // Has Switcher Items
+    // ======================================
+    public Boolean hasSwitcherItems(Player player) {
+        String playerUUID = player.getUniqueId().toString();
+        if (playerInvs.containsKey(playerUUID)) {
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ======================================
+    // Is A Switcher Item
+    // ======================================
+    public Boolean isSwitcherItem(ItemStack item, ItemStack switcherItem) {
+        if (item != null) {
+            if (item.getType() != null) {
+                if (item.getType().equals(switcherItem.getType())) {
+                    if (item.getItemMeta() != null) {
+                        if (item.getItemMeta().getDisplayName() != null) {
+                            if (item.getItemMeta().getDisplayName().equals(switcherItem.getItemMeta().getDisplayName())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     // ======================================
     // Login
@@ -287,49 +329,24 @@ public class InventoryPages extends JavaPlugin implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory clickedInv = event.getClickedInventory();
-        InventoryHolder holder = clickedInv.getHolder();
-        if (holder instanceof Player) {
-            Player player = (Player) holder;
-            if (hasSwitcherItems(player)) {
-                ItemStack item = event.getCurrentItem();
-                if (isSwitcherItem(item, prevItem)) {
-                    event.setCancelled(true);
-                    playerInvs.get(player.getUniqueId().toString()).prevPage();
-                } else if (isSwitcherItem(item, nextItem)) {
-                    event.setCancelled(true);
-                    playerInvs.get(player.getUniqueId().toString()).nextPage();
-                } else if (isSwitcherItem(item, noPageItem)) {
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }
-
-    public Boolean hasSwitcherItems(Player player) {
-        String playerUUID = player.getUniqueId().toString();
-        if (playerInvs.containsKey(playerUUID)) {
-            if (player.getGameMode() != GameMode.CREATIVE) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Boolean isSwitcherItem(ItemStack item, ItemStack switcherItem) {
-        if (item != null) {
-            if (item.getType() != null) {
-                if (item.getType().equals(switcherItem.getType())) {
-                    if (item.getItemMeta() != null) {
-                        if (item.getItemMeta().getDisplayName() != null) {
-                            if (item.getItemMeta().getDisplayName().equals(switcherItem.getItemMeta().getDisplayName())) {
-                                return true;
-                            }
-                        }
+        if (clickedInv != null) {
+            InventoryHolder holder = clickedInv.getHolder();
+            if (holder instanceof Player) {
+                Player player = (Player) holder;
+                if (hasSwitcherItems(player)) {
+                    ItemStack item = event.getCurrentItem();
+                    if (isSwitcherItem(item, prevItem)) {
+                        event.setCancelled(true);
+                        playerInvs.get(player.getUniqueId().toString()).prevPage();
+                    } else if (isSwitcherItem(item, nextItem)) {
+                        event.setCancelled(true);
+                        playerInvs.get(player.getUniqueId().toString()).nextPage();
+                    } else if (isSwitcherItem(item, noPageItem)) {
+                        event.setCancelled(true);
                     }
                 }
             }
         }
-        return false;
     }
 
     // ======================================
@@ -371,15 +388,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
                     }
                 }
             }
-        }
-    }
-
-    // ======================
-    // Clear Player Hotbar
-    // ======================
-    public void clearHotbar(Player player) {
-        for (int i = 0; i < 9; i++) {
-            player.getInventory().setItem(i, null);
         }
     }
 }
