@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -328,7 +329,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Inventory clickedInv = event.getClickedInventory();
+        Inventory clickedInv = getClickedInventory(event.getView(), event.getRawSlot());
         if (clickedInv != null) {
             InventoryHolder holder = clickedInv.getHolder();
             if (holder instanceof Player) {
@@ -348,7 +349,22 @@ public class InventoryPages extends JavaPlugin implements Listener {
             }
         }
     }
-
+    
+    // ======================================
+    // Get Clicked Inventory
+    // ======================================
+    public Inventory getClickedInventory(InventoryView view, int slot) {
+        Inventory clickedInventory;;
+        if (slot < 0) {
+            clickedInventory = null;
+        } else if (view.getTopInventory() != null && slot < view.getTopInventory().getSize()) {
+            clickedInventory = view.getTopInventory();
+        } else {
+            clickedInventory = view.getBottomInventory();
+        }
+    	return clickedInventory;
+    }
+    
     // ======================================
     // GameMode Change
     // ======================================
