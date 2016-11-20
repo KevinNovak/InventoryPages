@@ -332,22 +332,24 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory clickedInv = getClickedInventory(event.getView(), event.getRawSlot());
         if (clickedInv != null) {
-            InventoryHolder holder = clickedInv.getHolder();
-            if (holder instanceof Player) {
-                Player player = (Player) holder;
-                if (hasSwitcherItems(player)) {
-                    ItemStack item = event.getCurrentItem();
-                    if (isSwitcherItem(item, prevItem)) {
-                        event.setCancelled(true);
-                        playerInvs.get(player.getUniqueId().toString()).prevPage();
-                    } else if (isSwitcherItem(item, nextItem)) {
-                        event.setCancelled(true);
-                        playerInvs.get(player.getUniqueId().toString()).nextPage();
-                    } else if (isSwitcherItem(item, noPageItem)) {
-                        event.setCancelled(true);
+        	if (clickedInv.getType() == InventoryType.PLAYER) {
+                InventoryHolder holder = clickedInv.getHolder();
+                if (holder instanceof Player) {
+                    Player player = (Player) holder;
+                    if (hasSwitcherItems(player)) {
+                        ItemStack item = event.getCurrentItem();
+                        if (isSwitcherItem(item, prevItem)) {
+                            event.setCancelled(true);
+                            playerInvs.get(player.getUniqueId().toString()).prevPage();
+                        } else if (isSwitcherItem(item, nextItem)) {
+                            event.setCancelled(true);
+                            playerInvs.get(player.getUniqueId().toString()).nextPage();
+                        } else if (isSwitcherItem(item, noPageItem)) {
+                            event.setCancelled(true);
+                        }
                     }
                 }
-            }
+        	}
         }
     }
     
