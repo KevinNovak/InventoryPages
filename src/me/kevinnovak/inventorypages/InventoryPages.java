@@ -31,6 +31,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class InventoryPages extends JavaPlugin implements Listener {
+    File crashedFile = new File(getDataFolder() + "/backups/crashed.yml");
+    FileConfiguration crashedData = YamlConfiguration.loadConfiguration(crashedFile);
+
     private HashMap < String, CustomInventory > playerInvs = new HashMap < String, CustomInventory > ();
     ColorConverter colorConv = new ColorConverter(this);
 
@@ -42,6 +45,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // Enable
     // ======================================
     public void onEnable() {
+        crashedPlayersExist();
+
         saveDefaultConfig();
 
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
@@ -86,7 +91,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 // update inventories to hashmap and save to file
                 updateInvToHashMap(player);
                 saveInvFromHashMapToFile(player);
-                clearItems(player);
+                clearAndRemoveCrashedPlayer(player);
             }
         }
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
@@ -170,6 +175,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // Load Inventory From File Into HashMap
     // ======================================
     public void loadInvFromFileIntoHashMap(Player player) throws IOException {
+        clearAndRemoveCrashedPlayer(player);
+
         int maxPage = 1;
         Boolean foundPerm = false;
         for (int i = 2; i < 101; i++) {
@@ -183,6 +190,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             String playerUUID = player.getUniqueId().toString();
             CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
             playerInvs.put(playerUUID, inventory);
+            addCrashedPlayer(player);
             playerInvs.get(playerUUID).showPage(player.getGameMode());
         }
     }
@@ -204,18 +212,67 @@ public class InventoryPages extends JavaPlugin implements Listener {
         String playerUUID = player.getUniqueId().toString();
         if (playerInvs.containsKey(playerUUID)) {
             playerInvs.remove(playerUUID);
+            clearAndRemoveCrashedPlayer(player);
         }
     }
 
     // ======================================
-    // Clear Items
+    // Save Crashed File
     // ======================================
-    public void clearItems(Player player) {
-        for (int i = 0; i < 27; i++) {
-            player.getInventory().setItem(i + 9, null);
+    public void saveCrashedFile() {
+        try {
+            crashedData.save(crashedFile);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
-    
+
+    // ======================================
+    // Crashed Players Exist
+    // ======================================
+    public Boolean crashedPlayersExist() {
+        if (crashedData.contains("crashed")) {
+            if (crashedData.getConfigurationSection("crashed").getKeys(false).size() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ======================================
+    // Has Crashed
+    // ======================================
+    public Boolean hasCrashed(Player player) {
+        if (crashedData.contains("crashed." + player.getUniqueId().toString())) {
+            return true;
+        }
+        return false;
+    }
+
+    // ======================================
+    // Add Crashed Player
+    // ======================================
+    public void addCrashedPlayer(Player player) {
+        crashedData.set("crashed." + player.getUniqueId().toString(), true);
+        saveCrashedFile();
+    }
+
+    // ======================================
+    // Clear and Remove Crashed Player
+    // ======================================
+    public void clearAndRemoveCrashedPlayer(Player player) {
+        if (crashedPlayersExist()) {
+            if (hasCrashed(player)) {
+                for (int i = 0; i < 27; i++) {
+                    player.getInventory().setItem(i + 9, null);
+                }
+                crashedData.set("crashed." + player.getUniqueId().toString(), null);
+                saveCrashedFile();
+            }
+        }
+    }
+
     // ======================
     // Clear Player Hotbar
     // ======================
@@ -224,7 +281,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             player.getInventory().setItem(i, null);
         }
     }
-    
+
     // ======================================
     // Has Switcher Items
     // ======================================
@@ -278,7 +335,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
             updateInvToHashMap(player);
             saveInvFromHashMapToFile(player);
             removeInvFromHashMap(player);
-            clearItems(player);
         }
     }
 
@@ -332,7 +388,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory clickedInv = getClickedInventory(event.getView(), event.getRawSlot());
         if (clickedInv != null) {
-        	if (clickedInv.getType() == InventoryType.PLAYER) {
+            if (clickedInv.getType() == InventoryType.PLAYER) {
                 InventoryHolder holder = clickedInv.getHolder();
                 if (holder instanceof Player) {
                     Player player = (Player) holder;
@@ -349,10 +405,10 @@ public class InventoryPages extends JavaPlugin implements Listener {
                         }
                     }
                 }
-        	}
+            }
         }
     }
-    
+
     // ======================================
     // Get Clicked Inventory
     // ======================================
@@ -376,7 +432,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
         return clickedInventory;
     }
-    
+
     // ======================================
     // GameMode Change
     // ======================================
