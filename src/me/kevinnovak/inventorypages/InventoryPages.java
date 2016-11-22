@@ -41,7 +41,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     private ItemStack nextItem, prevItem, noPageItem;
     private Integer prevPos, nextPos;
     private List < String > clearCommands;
-    private String clear, clearAll, noPermission;
+    private String noPermission, clear, clearAll, itemsMerged, itemsDropped;
     private Boolean logSavesEnabled;
     private String logSavesMessage;
 
@@ -162,9 +162,13 @@ public class InventoryPages extends JavaPlugin implements Listener {
     }
     
     public void initLanguage() {
+    	noPermission = colorConv.convertConfig("language.noPermission");
+    	
     	clear = colorConv.convertConfig("language.clear");
     	clearAll = colorConv.convertConfig("language.clearAll");
-    	noPermission = colorConv.convertConfig("language.noPermission");
+    	
+    	itemsMerged = colorConv.convertConfig("language.itemsMerged");
+        itemsDropped = colorConv.convertConfig("language.itemsDropped");
     	
     	logSavesEnabled = getConfig().getBoolean("logging.saves.enabled");
     	logSavesMessage = "[InventoryPages] " + getConfig().getString("logging.saves.message");
@@ -239,7 +243,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         if (foundPerm) {
             String playerUUID = player.getUniqueId().toString();
-            CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem);
+            CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem, itemsMerged, itemsDropped);
             playerInvs.put(playerUUID, inventory);
             addCrashedPlayer(player);
             playerInvs.get(playerUUID).showPage(player.getGameMode());

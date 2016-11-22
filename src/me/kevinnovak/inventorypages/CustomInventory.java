@@ -28,7 +28,7 @@ public class CustomInventory {
     // ======================================
     // Constructor
     // ======================================
-    CustomInventory(InventoryPages plugin, Player player, int maxPage, ItemStack prevItem, Integer prevPos, ItemStack nextItem, Integer nextPos, ItemStack noPageItem) {
+    CustomInventory(InventoryPages plugin, Player player, int maxPage, ItemStack prevItem, Integer prevPos, ItemStack nextItem, Integer nextPos, ItemStack noPageItem, String itemsMerged, String itemsDropped) {
         this.plugin = plugin;
         this.player = player;
         this.maxPage = maxPage;
@@ -104,10 +104,24 @@ public class CustomInventory {
 
         GameMode gm = player.getGameMode();
 
+        Boolean storedItem = false;
+        Boolean droppedItem = false;
         for (int i = 0; i < 27; i++) {
             ItemStack item = player.getInventory().getItem(i + 9);
             if (item != null) {
-                this.storeOrDropItem(item, gm);
+                if (this.storeOrDropItem(item, gm)) {
+                	droppedItem = true;
+                } else {
+                	storedItem = true;
+                }
+            }
+        }
+        if (playerFile.exists()) {
+            if (storedItem) {
+            	player.sendMessage(itemsMerged);
+            }
+            if (droppedItem) {
+            	player.sendMessage(itemsDropped);
             }
         }
 
@@ -363,20 +377,25 @@ public class CustomInventory {
     // ======================================
     // Store/Drop Item
     // ======================================
-    void storeOrDropItem(ItemStack item, GameMode gm) {
+    // returns true if dropped
+    Boolean storeOrDropItem(ItemStack item, GameMode gm) {
         if (gm != GameMode.CREATIVE) {
             SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
             if (nextFreeSpace != null) {
                 this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), item);
+                return false;
             } else {
                 this.player.getWorld().dropItem(player.getLocation(), item);
+                return true;
             }
         } else {
             int nextFreeSpace = nextCreativeFreeSpace();
             if (nextFreeSpace != -1) {
                 this.creativeItems.set(nextFreeSpace, item);
+                return false;
             } else {
                 this.player.getWorld().dropItem(player.getLocation(), item);
+                return true;
             }
         }
 

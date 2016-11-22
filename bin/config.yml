@@ -94,7 +94,7 @@ saving:
     #      If disabled, inventories are only saved when players leave the server
     enabled: true
     # How often should inventories be saved to files, in seconds
-    interval: 300
+    interval: 900
     
 logging:
     saves:
@@ -102,8 +102,8 @@ logging:
         message: 'All inventories have been saved.'
     
 language:
+    noPermission: '&4You do not have access to that command.'
     clear: '&6Cleared inventory items from hotbar and current page.'
     clearAll: '&6Cleared inventory items from hotbar and all pages.'
-    noPermission: '&4You do not have access to that command.'
-        
-    
+    itemsMerged: '&7Items have been moved to your inventory pages.'
+    itemsDropped: '&cYour inventory is full, some items have been dropped.'
