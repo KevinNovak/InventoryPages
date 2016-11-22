@@ -41,6 +41,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     private ItemStack nextItem, prevItem, noPageItem;
     private Integer prevPos, nextPos;
     private List < String > clearCommands;
+    private String clear, clearAll, noPermission;
 
     // ======================================
     // Enable
@@ -67,6 +68,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         // initialize commands
         initCommands();
+        
+        // initialize language
+        initLanguage();
 
         // load all online players into hashmap
         for (Player player: Bukkit.getServer().getOnlinePlayers()) {
@@ -144,6 +148,12 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
     public void initCommands() {
         clearCommands = getConfig().getStringList("commands.clear.aliases");
+    }
+    
+    public void initLanguage() {
+    	clear = colorConv.convertConfig("language.clear");
+    	clearAll = colorConv.convertConfig("language.clearAll");
+    	noPermission = colorConv.convertConfig("language.noPermission");
     }
 
     public void startSaving() {
@@ -491,11 +501,15 @@ public class InventoryPages extends JavaPlugin implements Listener {
                         GameMode gm = player.getGameMode();
                         if (cmdLine.startsWith("/" + clearCommand + " all ") || cmdLine.equalsIgnoreCase("/" + clearCommand + " all")) {
                             playerInvs.get(playerUUID).clearAllPages(gm);
+                            player.sendMessage(clearAll);
                         } else {
                             playerInvs.get(playerUUID).clearPage(gm);
+                            player.sendMessage(clear);
                         }
                         clearHotbar(player);
                         playerInvs.get(playerUUID).showPage(gm);
+                    } else {
+                    	player.sendMessage(noPermission);
                     }
                 }
             }
