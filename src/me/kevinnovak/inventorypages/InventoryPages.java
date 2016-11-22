@@ -42,6 +42,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
     private Integer prevPos, nextPos;
     private List < String > clearCommands;
     private String clear, clearAll, noPermission;
+    private Boolean logSavesEnabled;
+    private String logSavesMessage;
 
     // ======================================
     // Enable
@@ -49,30 +51,35 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
 
+        Bukkit.getServer().getLogger().info("[InventoryPages] Registering events.");
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
 
         if (getConfig().getBoolean("metrics")) {
             try {
                 MetricsLite metrics = new MetricsLite(this);
                 metrics.start();
-                Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Enabled!");
+                Bukkit.getServer().getLogger().info("[InventoryPages] Metrics enabled!");
             } catch (IOException e) {
-                Bukkit.getServer().getLogger().info("[InventoryPages] Failed to Start Metrics.");
+                Bukkit.getServer().getLogger().warning("[InventoryPages] Failed to start metrics.");
             }
         } else {
-            Bukkit.getServer().getLogger().info("[InventoryPages] Metrics Disabled.");
+            Bukkit.getServer().getLogger().info("[InventoryPages] Metrics disabled.");
         }
 
         // initialize next, prev items
+        Bukkit.getServer().getLogger().info("[InventoryPages] Setting up items.");
         initItems();
 
         // initialize commands
+        Bukkit.getServer().getLogger().info("[InventoryPages] Setting up commands.");
         initCommands();
         
         // initialize language
+        Bukkit.getServer().getLogger().info("[InventoryPages] Setting up language.");
         initLanguage();
 
         // load all online players into hashmap
+        Bukkit.getServer().getLogger().info("[InventoryPages] Setting up inventories.");
         for (Player player: Bukkit.getServer().getOnlinePlayers()) {
             try {
                 loadInvFromFileIntoHashMap(player);
@@ -81,10 +88,11 @@ public class InventoryPages extends JavaPlugin implements Listener {
             }
         }
         if (getConfig().getBoolean("saving.enabled")) {
+        	Bukkit.getServer().getLogger().info("[InventoryPages] Setting up inventory saving.");
             startSaving();
         }
 
-        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Enabled!");
+        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin enabled!");
     }
 
     // ======================================
@@ -100,7 +108,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 clearAndRemoveCrashedPlayer(player);
             }
         }
-        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
+        Bukkit.getServer().getLogger().info("[InventoryPages] Plugin disabled.");
     }
 
     // ======================================
@@ -114,6 +122,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
                     updateInvToHashMap(player);
                     saveInvFromHashMapToFile(player);
                 }
+            }
+            if (logSavesEnabled) {
+            	Bukkit.getServer().getLogger().info(logSavesMessage);;
             }
         }
     }
@@ -154,6 +165,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
     	clear = colorConv.convertConfig("language.clear");
     	clearAll = colorConv.convertConfig("language.clearAll");
     	noPermission = colorConv.convertConfig("language.noPermission");
+    	
+    	logSavesEnabled = getConfig().getBoolean("logging.saves.enabled");
+    	logSavesMessage = "[InventoryPages] " + getConfig().getString("logging.saves.message");
     }
 
     public void startSaving() {

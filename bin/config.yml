@@ -96,6 +96,11 @@ saving:
     # How often should inventories be saved to files, in seconds
     interval: 300
     
+logging:
+    saves:
+        enabled: true
+        message: 'All inventories have been saved.'
+    
 language:
     clear: '&6Cleared inventory items from hotbar and current page.'
     clearAll: '&6Cleared inventory items from hotbar and all pages.'
