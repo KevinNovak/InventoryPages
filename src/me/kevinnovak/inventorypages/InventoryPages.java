@@ -81,7 +81,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
         if (getConfig().getBoolean("saving.enabled")) {
             startSaving();
         }
-        
+
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Enabled!");
     }
 
@@ -100,12 +100,12 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
         Bukkit.getServer().getLogger().info("[InventoryPages] Plugin Disabled!");
     }
-    
+
     // ======================================
     // Update and Save All Inventories to Files
     // ======================================
     public void updateAndSaveAllInventoriesToFiles() {
-    	if (!Bukkit.getServer().getOnlinePlayers().isEmpty()) {
+        if (!Bukkit.getServer().getOnlinePlayers().isEmpty()) {
             for (Player player: Bukkit.getServer().getOnlinePlayers()) {
                 String playerUUID = player.getUniqueId().toString();
                 if (playerInvs.containsKey(playerUUID)) {
@@ -113,7 +113,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                     saveInvFromHashMapToFile(player);
                 }
             }
-    	}
+        }
     }
 
     // ======================================
@@ -147,15 +147,15 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void initCommands() {
         clearCommands = getConfig().getStringList("commands.clear.aliases");
     }
-    
+
     public void startSaving() {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
+        	@Override
             public void run() {
-            	updateAndSaveAllInventoriesToFiles();
+                updateAndSaveAllInventoriesToFiles();
             }
-        }, 0L, 20*getConfig().getInt("saving.interval"));
+        }, 0L, 20 * getConfig().getInt("saving.interval"));
     }
 
     // ======================================
