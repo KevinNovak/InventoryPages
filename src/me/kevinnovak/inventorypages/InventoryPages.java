@@ -46,8 +46,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // Enable
     // ======================================
     public void onEnable() {
-        crashedPlayersExist();
-
         saveDefaultConfig();
 
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
