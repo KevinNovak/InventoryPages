@@ -110,18 +110,18 @@ public class CustomInventory {
             ItemStack item = player.getInventory().getItem(i + 9);
             if (item != null) {
                 if (this.storeOrDropItem(item, gm)) {
-                	droppedItem = true;
+                    droppedItem = true;
                 } else {
-                	storedItem = true;
+                    storedItem = true;
                 }
             }
         }
         if (playerFile.exists()) {
             if (storedItem) {
-            	player.sendMessage(itemsMerged);
+                player.sendMessage(itemsMerged);
             }
             if (droppedItem) {
-            	player.sendMessage(itemsDropped);
+                player.sendMessage(itemsDropped);
             }
         }
 

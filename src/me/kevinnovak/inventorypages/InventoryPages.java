@@ -73,7 +73,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
         // initialize commands
         Bukkit.getServer().getLogger().info("[InventoryPages] Setting up commands.");
         initCommands();
-        
+
         // initialize language
         Bukkit.getServer().getLogger().info("[InventoryPages] Setting up language.");
         initLanguage();
@@ -88,7 +88,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             }
         }
         if (getConfig().getBoolean("saving.enabled")) {
-        	Bukkit.getServer().getLogger().info("[InventoryPages] Setting up inventory saving.");
+            Bukkit.getServer().getLogger().info("[InventoryPages] Setting up inventory saving.");
             startSaving();
         }
 
@@ -124,7 +124,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 }
             }
             if (logSavesEnabled) {
-            	Bukkit.getServer().getLogger().info(logSavesMessage);;
+                Bukkit.getServer().getLogger().info(logSavesMessage);;
             }
         }
     }
@@ -160,18 +160,18 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void initCommands() {
         clearCommands = getConfig().getStringList("commands.clear.aliases");
     }
-    
+
     public void initLanguage() {
-    	noPermission = colorConv.convertConfig("language.noPermission");
-    	
-    	clear = colorConv.convertConfig("language.clear");
-    	clearAll = colorConv.convertConfig("language.clearAll");
-    	
-    	itemsMerged = colorConv.convertConfig("language.itemsMerged");
+        noPermission = colorConv.convertConfig("language.noPermission");
+
+        clear = colorConv.convertConfig("language.clear");
+        clearAll = colorConv.convertConfig("language.clearAll");
+
+        itemsMerged = colorConv.convertConfig("language.itemsMerged");
         itemsDropped = colorConv.convertConfig("language.itemsDropped");
-    	
-    	logSavesEnabled = getConfig().getBoolean("logging.saves.enabled");
-    	logSavesMessage = "[InventoryPages] " + getConfig().getString("logging.saves.message");
+
+        logSavesEnabled = getConfig().getBoolean("logging.saves.enabled");
+        logSavesMessage = "[InventoryPages] " + getConfig().getString("logging.saves.message");
     }
 
     public void startSaving() {
@@ -527,7 +527,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                         clearHotbar(player);
                         playerInvs.get(playerUUID).showPage(gm);
                     } else {
-                    	player.sendMessage(noPermission);
+                        player.sendMessage(noPermission);
                     }
                 }
             }
