@@ -102,6 +102,14 @@ saving:
     interval: 900
 
 # ============================================
+# Drops
+# ============================================
+drops:
+    # When players die, which pages should be dropped?
+    # Options are 'ALL', 'ONE', or 'NONE'
+    option: 'ALL'
+
+# ============================================
 # Logging
 # ============================================
 logging:
