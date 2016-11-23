@@ -242,8 +242,14 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
 
         if (foundPerm) {
+        	int dropOption = 2;
+        	if (player.hasPermission("inventorypages.drop.one")) {
+        		dropOption = 1;
+        	} else if (player.hasPermission("inventorypages.drop.none")) {
+        		dropOption = 0;
+        	}
             String playerUUID = player.getUniqueId().toString();
-            CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem, itemsMerged, itemsDropped);
+            CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem, itemsMerged, itemsDropped, dropOption);
             playerInvs.put(playerUUID, inventory);
             addCrashedPlayer(player);
             playerInvs.get(playerUUID).showPage(player.getGameMode());
