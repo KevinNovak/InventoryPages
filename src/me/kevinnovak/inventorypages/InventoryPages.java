@@ -244,7 +244,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
             int dropOption = 2;
             if (player.hasPermission("inventorypages.drop.one")) {
                 dropOption = 1;
-            } else if (player.hasPermission("inventorypages.drop.none")) {
+            }
+            if (player.hasPermission("inventorypages.drop.none")) {
                 dropOption = 0;
             }
             String playerUUID = player.getUniqueId().toString();
