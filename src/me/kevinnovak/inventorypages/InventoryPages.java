@@ -42,7 +42,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
     private Integer prevPos, nextPos;
     private List < String > clearCommands;
     private String noPermission, clear, clearAll, itemsMerged, itemsDropped;
-    private String dropsOption;
     private Boolean logSavesEnabled;
     private String logSavesMessage;
 
@@ -78,9 +77,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
         // initialize language
         Bukkit.getServer().getLogger().info("[InventoryPages] Setting up language.");
         initLanguage();
-        
-        // initialize options
-        initOptions();
 
         // load all online players into hashmap
         Bukkit.getServer().getLogger().info("[InventoryPages] Setting up inventories.");
@@ -176,13 +172,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         logSavesEnabled = getConfig().getBoolean("logging.saves.enabled");
         logSavesMessage = "[InventoryPages] " + getConfig().getString("logging.saves.message");
-    }
-    
-    public void initOptions() {
-    	dropsOption = getConfig().getString("drops.option");
-    	if (dropsOption != "ALL" && dropsOption != "ONE" && dropsOption != "NONE") {
-    		dropsOption = "NONE";
-    	}
     }
 
     public void startSaving() {
@@ -415,16 +404,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             //save items before death
             updateInvToHashMap(player);
 
-            if (hasSwitcherItems(player)) {
-                List < ItemStack > drops = event.getDrops();
-                ListIterator < ItemStack > litr = drops.listIterator();
-                while (litr.hasNext()) {
-                    ItemStack item = litr.next();
-                    if (isSwitcherItem(item, prevItem) || isSwitcherItem(item, nextItem) || isSwitcherItem(item, noPageItem)) {
-                        litr.remove();
-                    }
-                }
-            }
+            event.setKeepInventory(true);
         }
     }
 
