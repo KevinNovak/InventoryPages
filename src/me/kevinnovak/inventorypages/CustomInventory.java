@@ -182,6 +182,46 @@ public class CustomInventory {
             clearPage(gm);
         }
     }
+    
+    // ======================================
+    // Drop Page
+    // ======================================
+    void dropPage(GameMode gm) {
+        dropPage(this.page, gm);
+    }
+    
+    void dropPage(int page, GameMode gm) {
+    	if (gm != GameMode.CREATIVE) {
+            for (int i = 0; i < 25; i++) {
+                ItemStack item = this.items.get(page).get(i);
+                if (item != null) {
+                    this.player.getWorld().dropItemNaturally(this.player.getLocation(), item);
+                    this.items.get(page).set(i, null);
+                }
+            }
+    	} else {
+    		for (int i = 0; i < 27; i++) {
+                ItemStack item = this.creativeItems.get(i);
+                if (item != null) {
+                    this.player.getWorld().dropItemNaturally(this.player.getLocation(), item);
+                    this.creativeItems.set(i, null);
+                }
+    		}
+    	}
+    }
+    
+    // ======================================
+    // Drop All Pages
+    // ======================================
+    void dropAllPages(GameMode gm) {
+        if (gm != GameMode.CREATIVE) {
+            for (int i = 0; i < this.maxPage + 1; i++) {
+                dropPage(i, gm);
+            }
+        } else {
+            dropPage(gm);
+        }
+    }
 
     // ======================================
     // Show Page

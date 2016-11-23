@@ -409,8 +409,17 @@ public class InventoryPages extends JavaPlugin implements Listener {
         if (playerInvs.containsKey(playerUUID)) {
             //save items before death
             updateInvToHashMap(player);
-
+            
             event.setKeepInventory(true);
+            
+            GameMode gm = player.getGameMode();
+            int dropOption = playerInvs.get(playerUUID).getDropOption();
+            player.sendMessage("DROP OPTION: " + dropOption);
+            if (dropOption == 1) {
+            	playerInvs.get(playerUUID).dropPage(gm);
+            } else if (dropOption == 2) {
+            	playerInvs.get(playerUUID).dropAllPages(gm);
+            }
         }
     }
 
@@ -423,11 +432,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
         String playerUUID = player.getUniqueId().toString();
         if (playerInvs.containsKey(playerUUID)) {
             GameMode gm = player.getGameMode();
-
-            // saves empty inventory (other than next and prev)
-            // disable this if you want to keep items
-            updateInvToHashMap(player);
-
             playerInvs.get(playerUUID).showPage(gm);
         }
     }
