@@ -417,7 +417,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
             if (hasSwitcherItems(player)) {
                 List < ItemStack > drops = event.getDrops();
-                event.setKeepLevel(true);
                 ListIterator < ItemStack > litr = drops.listIterator();
                 while (litr.hasNext()) {
                     ItemStack item = litr.next();
