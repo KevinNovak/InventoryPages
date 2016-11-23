@@ -39,7 +39,7 @@ public class CustomInventory {
         this.nextPos = nextPos;
         this.noPageItem = noPageItem;
         this.dropOption = dropOption;
-        
+
         // create pages
         for (int i = 0; i < maxPage + 1; i++) {
             if (!pageExists(i)) {
@@ -182,16 +182,16 @@ public class CustomInventory {
             clearPage(gm);
         }
     }
-    
+
     // ======================================
     // Drop Page
     // ======================================
     void dropPage(GameMode gm) {
         dropPage(this.page, gm);
     }
-    
+
     void dropPage(int page, GameMode gm) {
-    	if (gm != GameMode.CREATIVE) {
+        if (gm != GameMode.CREATIVE) {
             for (int i = 0; i < 25; i++) {
                 ItemStack item = this.items.get(page).get(i);
                 if (item != null) {
@@ -199,17 +199,17 @@ public class CustomInventory {
                     this.items.get(page).set(i, null);
                 }
             }
-    	} else {
-    		for (int i = 0; i < 27; i++) {
+        } else {
+            for (int i = 0; i < 27; i++) {
                 ItemStack item = this.creativeItems.get(i);
                 if (item != null) {
                     this.player.getWorld().dropItemNaturally(this.player.getLocation(), item);
                     this.creativeItems.set(i, null);
                 }
-    		}
-    	}
+            }
+        }
     }
-    
+
     // ======================================
     // Drop All Pages
     // ======================================
@@ -399,7 +399,7 @@ public class CustomInventory {
     void setDropOption(int dropOption) {
         this.dropOption = dropOption;
     }
-    
+
     // ======================================
     // Next Free Space
     // ======================================

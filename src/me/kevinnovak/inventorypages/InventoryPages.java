@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -242,12 +241,12 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
 
         if (foundPerm) {
-        	int dropOption = 2;
-        	if (player.hasPermission("inventorypages.drop.one")) {
-        		dropOption = 1;
-        	} else if (player.hasPermission("inventorypages.drop.none")) {
-        		dropOption = 0;
-        	}
+            int dropOption = 2;
+            if (player.hasPermission("inventorypages.drop.one")) {
+                dropOption = 1;
+            } else if (player.hasPermission("inventorypages.drop.none")) {
+                dropOption = 0;
+            }
             String playerUUID = player.getUniqueId().toString();
             CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem, itemsMerged, itemsDropped, dropOption);
             playerInvs.put(playerUUID, inventory);
@@ -409,16 +408,16 @@ public class InventoryPages extends JavaPlugin implements Listener {
         if (playerInvs.containsKey(playerUUID)) {
             //save items before death
             updateInvToHashMap(player);
-            
+
             event.setKeepInventory(true);
-            
+
             GameMode gm = player.getGameMode();
             int dropOption = playerInvs.get(playerUUID).getDropOption();
             player.sendMessage("DROP OPTION: " + dropOption);
             if (dropOption == 1) {
-            	playerInvs.get(playerUUID).dropPage(gm);
+                playerInvs.get(playerUUID).dropPage(gm);
             } else if (dropOption == 2) {
-            	playerInvs.get(playerUUID).dropAllPages(gm);
+                playerInvs.get(playerUUID).dropAllPages(gm);
             }
         }
     }
