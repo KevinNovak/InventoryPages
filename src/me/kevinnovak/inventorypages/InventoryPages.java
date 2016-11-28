@@ -406,7 +406,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             event.setKeepInventory(true);
 
             GameMode gm = player.getGameMode();
-            
+
             int dropOption = 2;
             if (player.hasPermission("inventorypages.drop.one")) {
                 dropOption = 1;
@@ -414,8 +414,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
             if (player.hasPermission("inventorypages.drop.none")) {
                 dropOption = 0;
             }
-            
-            player.sendMessage("DROP OPTION: " + dropOption);
+
+            //player.sendMessage("DROP OPTION: " + dropOption);
             if (dropOption == 1) {
                 playerInvs.get(playerUUID).dropPage(gm);
             } else if (dropOption == 2) {
