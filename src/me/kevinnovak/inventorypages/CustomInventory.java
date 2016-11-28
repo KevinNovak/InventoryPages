@@ -59,7 +59,7 @@ public class CustomInventory {
             HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
 
             for (int i = 0; i < maxPage + 1; i++) {
-                Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + i);
+                //Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + i);
                 ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
                 for (int j = 0; j < 25; j++) {
                     ItemStack item = null;
@@ -125,7 +125,7 @@ public class CustomInventory {
             }
         }
 
-        player.sendMessage("Your max pages are: " + (maxPage + 1));
+        //player.sendMessage("Your max pages are: " + (maxPage + 1));
     }
 
     // ======================================
@@ -242,7 +242,7 @@ public class CustomInventory {
         } else {
             this.page = page;
         }
-        player.sendMessage("GameMode: " + gm);
+        //player.sendMessage("GameMode: " + gm);
         if (gm != GameMode.CREATIVE) {
             Boolean foundPrev = false;
             Boolean foundNext = false;
@@ -272,7 +272,7 @@ public class CustomInventory {
                     this.player.getInventory().setItem(i + 9, this.items.get(this.page).get(j));
                 }
             }
-            player.sendMessage("Showing Page: " + this.page);
+            //player.sendMessage("Showing Page: " + this.page);
         } else {
             this.hasUsedCreative = true;
             for (int i = 0; i < 27; i++) {
