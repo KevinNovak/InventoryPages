@@ -21,7 +21,6 @@ public class CustomInventory {
     private Player player;
     private ItemStack prevItem, nextItem, noPageItem;
     private Integer page = 0, maxPage = 1, prevPos, nextPos;
-    private int dropOption;
     private Boolean hasUsedCreative = false;
     private HashMap < Integer, ArrayList < ItemStack >> items = new HashMap < Integer, ArrayList < ItemStack >> ();;
     private ArrayList < ItemStack > creativeItems = new ArrayList < ItemStack > (27);
@@ -29,7 +28,7 @@ public class CustomInventory {
     // ======================================
     // Constructor
     // ======================================
-    CustomInventory(InventoryPages plugin, Player player, int maxPage, ItemStack prevItem, Integer prevPos, ItemStack nextItem, Integer nextPos, ItemStack noPageItem, String itemsMerged, String itemsDropped, Integer dropOption) {
+    CustomInventory(InventoryPages plugin, Player player, int maxPage, ItemStack prevItem, Integer prevPos, ItemStack nextItem, Integer nextPos, ItemStack noPageItem, String itemsMerged, String itemsDropped) {
         this.plugin = plugin;
         this.player = player;
         this.maxPage = maxPage;
@@ -38,7 +37,6 @@ public class CustomInventory {
         this.nextItem = nextItem;
         this.nextPos = nextPos;
         this.noPageItem = noPageItem;
-        this.dropOption = dropOption;
 
         // create pages
         for (int i = 0; i < maxPage + 1; i++) {
@@ -387,17 +385,6 @@ public class CustomInventory {
 
     void setUsedCreative(Boolean hasUsedCreative) {
         this.hasUsedCreative = hasUsedCreative;
-    }
-
-    // ======================================
-    // Get/Set Drop Option
-    // ======================================
-    int getDropOption() {
-        return this.dropOption;
-    }
-
-    void setDropOption(int dropOption) {
-        this.dropOption = dropOption;
     }
 
     // ======================================

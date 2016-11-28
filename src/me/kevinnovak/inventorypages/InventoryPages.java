@@ -241,15 +241,8 @@ public class InventoryPages extends JavaPlugin implements Listener {
         }
 
         if (foundPerm) {
-            int dropOption = 2;
-            if (player.hasPermission("inventorypages.drop.one")) {
-                dropOption = 1;
-            }
-            if (player.hasPermission("inventorypages.drop.none")) {
-                dropOption = 0;
-            }
             String playerUUID = player.getUniqueId().toString();
-            CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem, itemsMerged, itemsDropped, dropOption);
+            CustomInventory inventory = new CustomInventory(this, player, maxPage, prevItem, prevPos, nextItem, nextPos, noPageItem, itemsMerged, itemsDropped);
             playerInvs.put(playerUUID, inventory);
             addCrashedPlayer(player);
             playerInvs.get(playerUUID).showPage(player.getGameMode());
@@ -413,7 +406,15 @@ public class InventoryPages extends JavaPlugin implements Listener {
             event.setKeepInventory(true);
 
             GameMode gm = player.getGameMode();
-            int dropOption = playerInvs.get(playerUUID).getDropOption();
+            
+            int dropOption = 2;
+            if (player.hasPermission("inventorypages.drop.one")) {
+                dropOption = 1;
+            }
+            if (player.hasPermission("inventorypages.drop.none")) {
+                dropOption = 0;
+            }
+            
             player.sendMessage("DROP OPTION: " + dropOption);
             if (dropOption == 1) {
                 playerInvs.get(playerUUID).dropPage(gm);
