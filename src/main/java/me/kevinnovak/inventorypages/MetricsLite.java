@@ -280,7 +280,7 @@ public class MetricsLite {
 
     /**
      * Gets the online player (backwards compatibility)
-     * 
+     *
      * @return online player amount
      */
     private int getOnlinePlayers() {
