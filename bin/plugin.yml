@@ -1,6 +1,5 @@
 name: InventoryPages
-version: 1.2.0
+version: 1.0.1
 main: me.kevinnovak.inventorypages.InventoryPages
 author: KevinNovak
 description: Add pages to inventories for expansive storage!
-api-version: 1.13

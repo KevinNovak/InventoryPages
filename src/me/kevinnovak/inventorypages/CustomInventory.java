@@ -1,12 +1,5 @@
 package me.kevinnovak.inventorypages;
 
-import org.bukkit.GameMode;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -15,15 +8,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.GameMode;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 public class CustomInventory {
     public InventoryPages plugin;
     private Player player;
     private ItemStack prevItem, nextItem, noPageItem;
     private Integer page = 0, maxPage = 1, prevPos, nextPos;
     private Boolean hasUsedCreative = false;
-    private HashMap<Integer, ArrayList<ItemStack>> items = new HashMap<Integer, ArrayList<ItemStack>>();
-    ;
-    private ArrayList<ItemStack> creativeItems = new ArrayList<ItemStack>(27);
+    private HashMap < Integer, ArrayList < ItemStack >> items = new HashMap < Integer, ArrayList < ItemStack >> ();;
+    private ArrayList < ItemStack > creativeItems = new ArrayList < ItemStack > (27);
 
     // ======================================
     // Constructor
@@ -56,11 +55,11 @@ public class CustomInventory {
 
         if (playerFile.exists()) {
             // load survival items
-            HashMap<Integer, ArrayList<ItemStack>> pageItemHashMap = new HashMap<Integer, ArrayList<ItemStack>>();
+            HashMap < Integer, ArrayList < ItemStack >> pageItemHashMap = new HashMap < Integer, ArrayList < ItemStack >> ();
 
             for (int i = 0; i < maxPage + 1; i++) {
                 //Bukkit.getLogger().info("Loading " + playerUUID + "'s Page: " + i);
-                ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+                ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
                 for (int j = 0; j < 25; j++) {
                     ItemStack item = null;
                     if (playerData.contains("items.main." + i + "." + j)) {
@@ -81,7 +80,7 @@ public class CustomInventory {
 
             // load creative items
             if (playerData.contains("items.creative.0")) {
-                ArrayList<ItemStack> creativeItems = new ArrayList<ItemStack>(27);
+                ArrayList < ItemStack > creativeItems = new ArrayList < ItemStack > (27);
                 for (int i = 0; i < 27; i++) {
                     ItemStack item = null;
                     if (playerData.contains("items.creative.0." + i)) {
@@ -133,7 +132,7 @@ public class CustomInventory {
     // ======================================
     void saveCurrentPage() {
         if (player.getGameMode() != GameMode.CREATIVE) {
-            ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+            ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
             for (int i = 0; i < 27; i++) {
                 if (i != prevPos && i != nextPos) {
                     pageItems.add(this.player.getInventory().getItem(i + 9));
@@ -156,7 +155,7 @@ public class CustomInventory {
 
     void clearPage(int page, GameMode gm) {
         if (gm != GameMode.CREATIVE) {
-            ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+            ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
             for (int i = 0; i < 25; i++) {
                 pageItems.add(null);
             }
@@ -287,7 +286,7 @@ public class CustomInventory {
     ItemStack addPageNums(ItemStack item) {
         ItemStack modItem = new ItemStack(item);
         ItemMeta itemMeta = modItem.getItemMeta();
-        List<String> itemLore = itemMeta.getLore();
+        List < String > itemLore = itemMeta.getLore();
         for (int j = 0; j < itemLore.size(); j++) {
             Integer currentPageUser = page + 1;
             Integer maxPageUser = maxPage + 1;
@@ -336,7 +335,7 @@ public class CustomInventory {
     // Create Page
     // ======================================
     void createPage(Integer page) {
-        ArrayList<ItemStack> pageItems = new ArrayList<ItemStack>(25);
+        ArrayList < ItemStack > pageItems = new ArrayList < ItemStack > (25);
         for (int i = 0; i < 25; i++) {
             pageItems.add(null);
         }
@@ -346,22 +345,22 @@ public class CustomInventory {
     // ======================================
     // Get/Set Items
     // ======================================
-    HashMap<Integer, ArrayList<ItemStack>> getItems() {
+    HashMap < Integer, ArrayList < ItemStack >> getItems() {
         return this.items;
     }
 
-    void setItems(HashMap<Integer, ArrayList<ItemStack>> items) {
+    void setItems(HashMap < Integer, ArrayList < ItemStack >> items) {
         this.items = items;
     }
 
     // ======================================
     // Get/Set Creative Items
     // ======================================
-    ArrayList<ItemStack> getCreativeItems() {
+    ArrayList < ItemStack > getCreativeItems() {
         return this.creativeItems;
     }
 
-    void setCreativeItems(ArrayList<ItemStack> creativeItems) {
+    void setCreativeItems(ArrayList < ItemStack > creativeItems) {
         this.creativeItems = creativeItems;
     }
 
@@ -390,11 +389,11 @@ public class CustomInventory {
     // ======================================
     // Next Free Space
     // ======================================
-    SimpleEntry<Integer, Integer> nextFreeSpace() {
+    SimpleEntry < Integer, Integer > nextFreeSpace() {
         for (Integer i = 0; i < maxPage + 1; i++) {
             for (Integer j = 0; j < 25; j++) {
                 if (items.get(i).get(j) == null) {
-                    SimpleEntry<Integer, Integer> pageAndPos = new AbstractMap.SimpleEntry<Integer, Integer>(i, j);
+                    SimpleEntry < Integer, Integer > pageAndPos = new AbstractMap.SimpleEntry < Integer, Integer > (i, j);
                     return pageAndPos;
                 }
             }
@@ -420,7 +419,7 @@ public class CustomInventory {
     // returns true if dropped
     Boolean storeOrDropItem(ItemStack item, GameMode gm) {
         if (gm != GameMode.CREATIVE) {
-            SimpleEntry<Integer, Integer> nextFreeSpace = nextFreeSpace();
+            SimpleEntry < Integer, Integer > nextFreeSpace = nextFreeSpace();
             if (nextFreeSpace != null) {
                 this.items.get(nextFreeSpace.getKey()).set(nextFreeSpace.getValue(), item);
                 return false;

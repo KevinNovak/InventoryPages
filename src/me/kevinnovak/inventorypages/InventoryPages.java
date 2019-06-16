@@ -1,8 +1,13 @@
 package me.kevinnovak.inventorypages;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -12,7 +17,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
@@ -21,23 +30,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
 public class InventoryPages extends JavaPlugin implements Listener {
     File crashedFile = new File(getDataFolder() + "/backups/crashed.yml");
     FileConfiguration crashedData = YamlConfiguration.loadConfiguration(crashedFile);
 
-    private HashMap<String, CustomInventory> playerInvs = new HashMap<String, CustomInventory>();
+    private HashMap < String, CustomInventory > playerInvs = new HashMap < String, CustomInventory > ();
     ColorConverter colorConv = new ColorConverter(this);
 
     private ItemStack nextItem, prevItem, noPageItem;
     private Integer prevPos, nextPos;
-    private List<String> clearCommands;
+    private List < String > clearCommands;
     private String noPermission, clear, clearAll, itemsMerged, itemsDropped;
     private Boolean logSavesEnabled;
     private String logSavesMessage;
@@ -77,7 +79,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         // load all online players into hashmap
         Bukkit.getServer().getLogger().info("[InventoryPages] Setting up inventories.");
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        for (Player player: Bukkit.getServer().getOnlinePlayers()) {
             try {
                 loadInvFromFileIntoHashMap(player);
             } catch (IOException e) {
@@ -96,7 +98,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // Disable
     // ======================================
     public void onDisable() {
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+        for (Player player: Bukkit.getServer().getOnlinePlayers()) {
             String playerUUID = player.getUniqueId().toString();
             if (playerInvs.containsKey(playerUUID)) {
                 // update inventories to hashmap and save to file
@@ -113,7 +115,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     public void updateAndSaveAllInventoriesToFiles() {
         if (!Bukkit.getServer().getOnlinePlayers().isEmpty()) {
-            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            for (Player player: Bukkit.getServer().getOnlinePlayers()) {
                 String playerUUID = player.getUniqueId().toString();
                 if (playerInvs.containsKey(playerUUID)) {
                     updateInvToHashMap(player);
@@ -121,7 +123,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
                 }
             }
             if (logSavesEnabled) {
-                Bukkit.getServer().getLogger().info(logSavesMessage);
+                Bukkit.getServer().getLogger().info(logSavesMessage);;
             }
         }
     }
@@ -129,9 +131,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     // Initialize Next Item
     // ======================================
+    @SuppressWarnings("deprecation")
     public void initItems() {
-
-        prevItem = new ItemStack(Material.getMaterial(getConfig().getString("items.prev.id")));
+        prevItem = new ItemStack(getConfig().getInt("items.prev.ID"), 1, (short) getConfig().getInt("items.prev.variation"));
         ItemMeta prevItemMeta = prevItem.getItemMeta();
         prevItemMeta.setDisplayName(colorConv.convertConfig("items.prev.name"));
         prevItemMeta.setLore(colorConv.convertConfigList("items.prev.lore"));
@@ -139,7 +141,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         prevPos = getConfig().getInt("items.prev.position");
 
-        nextItem = new ItemStack(Material.getMaterial(getConfig().getString("items.next.id")));
+        nextItem = new ItemStack(getConfig().getInt("items.next.ID"), 1, (short) getConfig().getInt("items.next.variation"));
         ItemMeta nextItemMeta = nextItem.getItemMeta();
         nextItemMeta.setDisplayName(colorConv.convertConfig("items.next.name"));
         nextItemMeta.setLore(colorConv.convertConfigList("items.next.lore"));
@@ -147,7 +149,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         nextPos = getConfig().getInt("items.next.position");
 
-        noPageItem = new ItemStack(Material.getMaterial(getConfig().getString("items.noPage.id")));
+        noPageItem = new ItemStack(getConfig().getInt("items.noPage.ID"), 1, (short) getConfig().getInt("items.noPage.variation"));
         ItemMeta noPageItemMeta = noPageItem.getItemMeta();
         noPageItemMeta.setDisplayName(colorConv.convertConfig("items.noPage.name"));
         noPageItemMeta.setLore(colorConv.convertConfigList("items.noPage.lore"));
@@ -174,7 +176,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void startSaving() {
         BukkitScheduler scheduler = getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
+        	@Override
             public void run() {
                 updateAndSaveAllInventoriesToFiles();
             }
@@ -191,7 +193,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
             FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
 
             // save survival items
-            for (Entry<Integer, ArrayList<ItemStack>> pageItemEntry : playerInvs.get(playerUUID).getItems().entrySet()) {
+            for (Entry < Integer, ArrayList < ItemStack >> pageItemEntry: playerInvs.get(playerUUID).getItems().entrySet()) {
                 for (int i = 0; i < pageItemEntry.getValue().size(); i++) {
                     if (pageItemEntry.getValue().get(i) != null) {
                         playerData.set("items.main." + pageItemEntry.getKey() + "." + i, InventoryStringDeSerializer.toBase64(pageItemEntry.getValue().get(i)));
@@ -507,7 +509,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmdLine = event.getMessage().toLowerCase();
         // clear
-        for (String clearCommand : this.clearCommands) {
+        for (String clearCommand: this.clearCommands) {
             if (cmdLine.startsWith("/" + clearCommand + " ") || cmdLine.equalsIgnoreCase("/" + clearCommand)) {
                 Player player = event.getPlayer();
                 String playerUUID = player.getUniqueId().toString();
