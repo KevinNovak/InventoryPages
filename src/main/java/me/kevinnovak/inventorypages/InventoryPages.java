@@ -12,10 +12,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -405,19 +402,38 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
             GameMode gm = player.getGameMode();
 
+            // Default drop all
             int dropOption = 2;
-            if (player.hasPermission("inventorypages.drop.one")) {
+
+            // If you have keep unopened, drop only the current page
+            if (player.hasPermission("inventorypages.keep.unopened")) {
                 dropOption = 1;
             }
-            if (player.hasPermission("inventorypages.drop.none")) {
+
+            // If you have keep all, don't drop anything
+            if (player.hasPermission("inventorypages.keep.all")) {
                 dropOption = 0;
             }
 
-            //player.sendMessage("DROP OPTION: " + dropOption);
             if (dropOption == 1) {
                 playerInvs.get(playerUUID).dropPage(gm);
             } else if (dropOption == 2) {
                 playerInvs.get(playerUUID).dropAllPages(gm);
+            }
+
+            if (!player.hasPermission("inventorypages.keep.hotbar")) {
+                dropHotbar(player);
+            }
+        }
+    }
+
+    private void dropHotbar(Player player) {
+        PlayerInventory playerInv = player.getInventory();
+        for (int i = 0; i <= 8; i++) {
+            ItemStack item = playerInv.getItem(i);
+            if (item != null) {
+                player.getWorld().dropItemNaturally(player.getLocation(), item);
+                player.getInventory().remove(item);
             }
         }
     }
