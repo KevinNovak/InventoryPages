@@ -2,6 +2,7 @@ package me.kevinnovak.inventorypages;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -118,7 +119,6 @@ public class InventoryPages extends JavaPlugin implements Listener {
             }
             if (logSavesEnabled) {
                 Bukkit.getServer().getLogger().info(logSavesMessage);
-                ;
             }
         }
     }
@@ -126,9 +126,9 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     // Initialize Next Item
     // ======================================
-    @SuppressWarnings("deprecation")
     public void initItems() {
-        prevItem = new ItemStack(getConfig().getInt("items.prev.ID"), 1, (short) getConfig().getInt("items.prev.variation"));
+
+        prevItem = new ItemStack(Material.getMaterial(getConfig().getString("items.prev.id")));
         ItemMeta prevItemMeta = prevItem.getItemMeta();
         prevItemMeta.setDisplayName(colorConv.convertConfig("items.prev.name"));
         prevItemMeta.setLore(colorConv.convertConfigList("items.prev.lore"));
@@ -136,7 +136,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         prevPos = getConfig().getInt("items.prev.position");
 
-        nextItem = new ItemStack(getConfig().getInt("items.next.ID"), 1, (short) getConfig().getInt("items.next.variation"));
+        nextItem = new ItemStack(Material.getMaterial(getConfig().getString("items.next.id")));
         ItemMeta nextItemMeta = nextItem.getItemMeta();
         nextItemMeta.setDisplayName(colorConv.convertConfig("items.next.name"));
         nextItemMeta.setLore(colorConv.convertConfigList("items.next.lore"));
@@ -144,7 +144,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
 
         nextPos = getConfig().getInt("items.next.position");
 
-        noPageItem = new ItemStack(getConfig().getInt("items.noPage.ID"), 1, (short) getConfig().getInt("items.noPage.variation"));
+        noPageItem = new ItemStack(Material.getMaterial(getConfig().getString("items.noPage.id")));
         ItemMeta noPageItemMeta = noPageItem.getItemMeta();
         noPageItemMeta.setDisplayName(colorConv.convertConfig("items.noPage.name"));
         noPageItemMeta.setLore(colorConv.convertConfigList("items.noPage.lore"));

@@ -12,15 +12,8 @@ metrics: true
 # Items
 # ============================================
 # ID
-#   Any item ID
-#   See http://minecraft-ids.grahamedgecombe.com/ for item IDs
-#
-# variation
-#   The item variation
-#   Typically this occurs after the colon symbol ":"
-#     Ex. Diorite is "1:3" so the ID is 1, and the variation is 3
-#   Set as 0 if there is no variation
-#     Ex. Cobblestone is "4" so the ID is 4, and the variation is 0
+#   Any item id (material)
+#   See https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list
 #
 # position
 #   Inventory positions:
@@ -52,8 +45,7 @@ metrics: true
 items:
   # The previous page button item
   prev:
-    ID: 160
-    variation: 9
+    id: CYAN_STAINED_GLASS_PANE
     position: 18
     name: '&6Prev Page'
     lore:
@@ -61,8 +53,7 @@ items:
 
   # The next page button item
   next:
-    ID: 160
-    variation: 9
+    id: CYAN_STAINED_GLASS_PANE
     position: 26
     name: '&6Next Page'
     lore:
@@ -70,8 +61,7 @@ items:
 
   # The no page button item
   noPage:
-    ID: 160
-    variation: 7
+    id: GRAY_STAINED_GLASS_PANE
     name: '&6No Pages'
     lore:
       - '&3Page {CURRENT}/{MAX}'
