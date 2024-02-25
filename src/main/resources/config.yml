@@ -2,13 +2,6 @@
 # Created by KevinNovak
 
 # ============================================
-# Metrics
-# ============================================
-# Whether or not to collect data on plugin usage
-# Viewable at http://mcstats.org/plugin/InventoryPages/
-metrics: true
-
-# ============================================
 # Items
 # ============================================
 # ID

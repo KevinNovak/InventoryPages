@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class InventoryPages extends JavaPlugin implements Listener {
+public final class InventoryPages extends JavaPlugin implements Listener {
     File crashedFile = new File(getDataFolder() + "/backups/crashed.yml");
     FileConfiguration crashedData = YamlConfiguration.loadConfiguration(crashedFile);
 
@@ -42,23 +42,12 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     // Enable
     // ======================================
+    @Override
     public void onEnable() {
         saveDefaultConfig();
 
         Bukkit.getServer().getLogger().info("[InventoryPages] Registering events.");
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
-
-        if (getConfig().getBoolean("metrics")) {
-            try {
-                MetricsLite metrics = new MetricsLite(this);
-                metrics.start();
-                Bukkit.getServer().getLogger().info("[InventoryPages] Metrics enabled!");
-            } catch (IOException e) {
-                Bukkit.getServer().getLogger().warning("[InventoryPages] Failed to start metrics.");
-            }
-        } else {
-            Bukkit.getServer().getLogger().info("[InventoryPages] Metrics disabled.");
-        }
 
         // initialize next, prev items
         Bukkit.getServer().getLogger().info("[InventoryPages] Setting up items.");
@@ -92,6 +81,7 @@ public class InventoryPages extends JavaPlugin implements Listener {
     // ======================================
     // Disable
     // ======================================
+    @Override
     public void onDisable() {
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             String playerUUID = player.getUniqueId().toString();
